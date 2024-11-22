@@ -9,4 +9,4 @@ cd /DiplomaAnahit
 
 ./gradlew build
 
-java -jar ./build/libs/DiplomaAnahit.jar
+java -jar ./build/libs/DiplomaAnahit-0.0.1-SNAPSHOT.jar

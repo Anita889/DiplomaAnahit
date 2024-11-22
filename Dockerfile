@@ -15,7 +15,7 @@ WORKDIR /DiplomaAnahit
 
 # Grant execute permissions to necessary scripts
 RUN chmod +x gradlew && ./gradlew
-RUN chmod +x shells/deploy-Dockerize.sh
+RUN chmod +x shells/deploy-DockerFile.sh
 
 # Set the default command
-CMD ["sh", "shells/deploy-Dockerize.sh"]
+CMD ["sh", "shells/deploy-DockerFile.sh"]
