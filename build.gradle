@@ -28,6 +28,8 @@ dependencies {
     implementation 'org.springframework.integration:spring-integration-jdbc'
     implementation 'org.springframework.integration:spring-integration-jpa'
     implementation 'org.springframework.integration:spring-integration-ws'
+    implementation 'org.flywaydb:flyway-core:9.16.3'
+    implementation 'org.flywaydb:flyway-mysql:9.16.3'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
