@@ -1,4 +1,4 @@
-package com.example.diplomaanahit.entities;
+package com.example.diplomaanahit.enums;
 
 public enum Subject {
     MATH,

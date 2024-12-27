@@ -8,14 +8,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Persistable;
+
+import java.time.LocalDate;
 
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class UserEntity {
+public class UserEntity implements Persistable<Integer> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer  id;
 
@@ -28,6 +31,9 @@ public class UserEntity {
     @Column(name = "registrationType")
     private String registrationType;
 
+    @Column(name = "login_date")
+    private LocalDate loginDate;
+
     public String getRegistrationType() {
         return registrationType;
     }
@@ -38,6 +44,11 @@ public class UserEntity {
 
     public Integer getId() {
         return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return false;
     }
 
     public String getEmail() {
@@ -58,5 +69,13 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getLoginDate() {
+        return loginDate;
+    }
+
+    public void setLoginDate(LocalDate loginDate) {
+        this.loginDate = loginDate;
     }
 }
