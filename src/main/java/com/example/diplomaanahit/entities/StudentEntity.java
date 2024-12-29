@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Student {
+public class StudentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -34,5 +34,5 @@ public class Student {
 
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "academy_group_id")
-    private AcademyGroups academyGroup;
+    private AcademyGroupsEntity academyGroup;
 }

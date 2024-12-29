@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Controller
+@RequestMapping("/api/user/authentication")
 public class UserLoginController {
 
 
