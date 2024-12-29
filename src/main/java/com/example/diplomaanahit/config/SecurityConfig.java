@@ -1,33 +1,33 @@
-package com.example.diplomaanahit.security;
+package com.example.diplomaanahit.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.diplomaanahit.security.AuthTokenFilter;
+import com.example.diplomaanahit.security.AuthenticationTokenService;
+import com.example.diplomaanahit.security.CorsFilter;
+import com.example.diplomaanahit.security.CustomUserDetailsService;
+import com.example.diplomaanahit.security.EntryPointUnauthorizedHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private EntryPointUnauthorizedHandler unauthorizedHandler;
-
-    @Autowired
-    private AuthenticationTokenService authenticationTokenService;
+    private final EntryPointUnauthorizedHandler unauthorizedHandler;
+    private final CustomUserDetailsService userDetailsService;
+    private final AuthenticationTokenService authenticationTokenService;
+    //private final UserSecurityService userSecurityService;
 
     @Value("${security.token.header}")
     private String tokenHeader;
@@ -35,26 +35,30 @@ public class SecurityConfig {
     @Value("${security.refreshtoken.header}")
     private String refreshTokenHeader;
 
+    public SecurityConfig(EntryPointUnauthorizedHandler unauthorizedHandler,
+                          CustomUserDetailsService userDetailsService,
+                          AuthenticationTokenService authenticationTokenService) {
+        this.unauthorizedHandler = unauthorizedHandler;
+        this.userDetailsService = userDetailsService;
+        this.authenticationTokenService = authenticationTokenService;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
+        return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public AuthenticationManager authenticationManagerBean(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManager.class);
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:3000"); // Change this for production
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
     @Bean
@@ -87,5 +91,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
 }
