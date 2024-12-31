@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -31,4 +29,36 @@ public class AcademyGroupsEntity {
 
     @Column(name = "end_year")
     private Integer endYear;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Integer getStartYear() {
+        return startYear;
+    }
+
+    public Integer getEndYear() {
+        return endYear;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setStartYear(Integer startYear) {
+        this.startYear = startYear;
+    }
+
+    public void setEndYear(Integer endYear) {
+        this.endYear = endYear;
+    }
 }

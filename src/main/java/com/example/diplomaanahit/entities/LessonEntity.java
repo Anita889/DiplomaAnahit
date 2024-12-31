@@ -18,8 +18,6 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.List;
 
-@Setter
-@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -41,4 +39,44 @@ public class LessonEntity {
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<QuestionVariantsEntity> questionVariants;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public String getLessonName() {
+        return lessonName;
+    }
+
+    public LocalDate getLessonDate() {
+        return lessonDate;
+    }
+
+    public LecturerEntity getLecturer() {
+        return lecturer;
+    }
+
+    public List<QuestionVariantsEntity> getQuestionVariants() {
+        return questionVariants;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setLessonName(String lessonName) {
+        this.lessonName = lessonName;
+    }
+
+    public void setLessonDate(LocalDate lessonDate) {
+        this.lessonDate = lessonDate;
+    }
+
+    public void setLecturer(LecturerEntity lecturer) {
+        this.lecturer = lecturer;
+    }
+
+    public void setQuestionVariants(List<QuestionVariantsEntity> questionVariants) {
+        this.questionVariants = questionVariants;
+    }
 }

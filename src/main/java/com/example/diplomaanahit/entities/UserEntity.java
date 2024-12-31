@@ -1,11 +1,7 @@
 package com.example.diplomaanahit.entities;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Persistable;
@@ -33,6 +29,14 @@ public class UserEntity implements Persistable<Integer> {
 
     @Column(name = "login_date")
     private LocalDate loginDate;
+
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private StudentEntity student;
+
+    @ManyToOne
+    @JoinColumn(name = "lecturer_id")
+    private LecturerEntity lecturer;
 
     public String getRegistrationType() {
         return registrationType;
@@ -77,5 +81,21 @@ public class UserEntity implements Persistable<Integer> {
 
     public void setLoginDate(LocalDate loginDate) {
         this.loginDate = loginDate;
+    }
+
+    public StudentEntity getStudent() {
+        return student;
+    }
+
+    public LecturerEntity getLecturer() {
+        return lecturer;
+    }
+
+    public void setStudent(StudentEntity student) {
+        this.student = student;
+    }
+
+    public void setLecturer(LecturerEntity lecturer) {
+        this.lecturer = lecturer;
     }
 }

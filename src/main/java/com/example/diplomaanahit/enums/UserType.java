@@ -4,8 +4,9 @@ package com.example.diplomaanahit.enums;
 public enum UserType {
     STUDENT("STUDENT"),
     LECTURER("LECTURER"),
-    ADMIN("ADMIN");
+    ADMIN("ADMIN"),
 
+    USER("USER");
     private String label;
 
     UserType(String label){

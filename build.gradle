@@ -45,6 +45,8 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'jakarta.xml.bind:jakarta.xml.bind-api:4.0.0'
     runtimeOnly 'org.glassfish.jaxb:jaxb-runtime:4.0.2'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+
 }
 
 tasks.named('test') {
