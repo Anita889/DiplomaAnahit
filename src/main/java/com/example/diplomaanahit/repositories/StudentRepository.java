@@ -11,4 +11,6 @@ public interface StudentRepository extends JpaRepository<StudentEntity, Integer>
     Optional<StudentEntity> findById(Integer id);
 
     void removeById(Integer id);
+
+    StudentEntity findByEmail(String email);
 }

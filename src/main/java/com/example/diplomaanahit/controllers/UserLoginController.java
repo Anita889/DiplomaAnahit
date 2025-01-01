@@ -2,9 +2,13 @@ package com.example.diplomaanahit.controllers;
 
 
 import com.example.diplomaanahit.dtos.AuthDTO;
+import com.example.diplomaanahit.entities.LecturerEntity;
+import com.example.diplomaanahit.entities.StudentEntity;
 import com.example.diplomaanahit.entities.UserEntity;
 import com.example.diplomaanahit.mapper.UserMapper;
 import com.example.diplomaanahit.security.AuthenticationTokenService;
+import com.example.diplomaanahit.services.LecturerService;
+import com.example.diplomaanahit.services.StudentService;
 import com.example.diplomaanahit.services.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +36,11 @@ public class UserLoginController {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private StudentService studentService;
+
+    @Autowired
+    private LecturerService lecturerService;
 
     @Value("${security.token.secret}")
     private  String accessTokenSecret;
@@ -51,7 +60,8 @@ public class UserLoginController {
             throw new Exception("Email or password was entered incorrect, please try again");
         }
 
-        AuthDTO token = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
+        AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
+        String token = auth.getAccessToken();
         return ResponseEntity.ok(Map.of(
                 "accessToken", token,
                 "user", userEntity
@@ -73,18 +83,25 @@ public class UserLoginController {
     }
 
     @RequestMapping(value = "signup", method = RequestMethod.POST)
-    public ResponseEntity<?> signUp(@RequestBody AuthDTO authDTO){
+    public ResponseEntity<?> signUp(@RequestBody AuthDTO authDTO) throws Exception {
         UserEntity userEntity = new UserEntity();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         userEntity.setPassword(encoder.encode(authDTO.getPassword()));
         userEntity.setEmail(authDTO.getEmail());
         userEntity.setLoginDate(LocalDate.now());
         UserEntity user = userDataService.findByEmail(authDTO.getEmail());
-        if(user == null
-                ||  !passwordEncoder.matches(user.getPassword(), userEntity.getPassword())){
-            userDataService.save(userEntity);
-            return ResponseEntity.ok(true);
+        StudentEntity student = studentService.findByEmail(authDTO.getEmail());
+        LecturerEntity lecturer = lecturerService.findByEmail(authDTO.getEmail());
+        if(user != null){
+            throw new Exception("We have this user!!");
         }
+        if(student != null){
+            userEntity.setStudent(student);
+        }
+        if(lecturer != null){
+            userEntity.setLecturer(lecturer);
+        }
+        userDataService.save(userEntity);
         return ResponseEntity.ok(false);
         }
 

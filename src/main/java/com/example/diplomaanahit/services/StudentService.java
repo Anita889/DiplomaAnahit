@@ -18,5 +18,9 @@ public class StudentService {
         Optional<StudentEntity> op = repository.findById(studentId);
         return op.orElse(null);
     }
+
+    public StudentEntity findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
 }
 

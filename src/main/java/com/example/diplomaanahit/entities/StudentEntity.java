@@ -34,6 +34,9 @@ public class StudentEntity {
     @JoinColumn(name = "academy_group_id")
     private AcademyGroupsEntity academyGroup;
 
+    @Column(name = "email")
+    private String email;
+
     public Integer getId() {
         return id;
     }
@@ -88,5 +91,13 @@ public class StudentEntity {
 
     public void setAcademyGroup(AcademyGroupsEntity academyGroup) {
         this.academyGroup = academyGroup;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
