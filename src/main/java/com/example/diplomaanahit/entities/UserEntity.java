@@ -32,11 +32,11 @@ public class UserEntity implements Persistable<Integer> {
 
     @ManyToOne
     @JoinColumn(name = "student_id")
-    private StudentEntity student;
+    private Student student;
 
     @ManyToOne
     @JoinColumn(name = "lecturer_id")
-    private LecturerEntity lecturer;
+    private Lecturer lecturer;
 
     public String getRegistrationType() {
         return registrationType;
@@ -83,19 +83,19 @@ public class UserEntity implements Persistable<Integer> {
         this.loginDate = loginDate;
     }
 
-    public StudentEntity getStudent() {
+    public Student getStudent() {
         return student;
     }
 
-    public LecturerEntity getLecturer() {
+    public Lecturer getLecturer() {
         return lecturer;
     }
 
-    public void setStudent(StudentEntity student) {
+    public void setStudent(Student student) {
         this.student = student;
     }
 
-    public void setLecturer(LecturerEntity lecturer) {
+    public void setLecturer(Lecturer lecturer) {
         this.lecturer = lecturer;
     }
 }

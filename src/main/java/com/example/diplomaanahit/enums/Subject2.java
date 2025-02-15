@@ -1,6 +1,6 @@
 package com.example.diplomaanahit.enums;
 
-public enum Subject {
+public enum Subject2 {
     MATH,
     PHYSICS,
     PROGRAMMING,

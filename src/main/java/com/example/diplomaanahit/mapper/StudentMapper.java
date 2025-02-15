@@ -1,18 +1,22 @@
 package com.example.diplomaanahit.mapper;
 
 import com.example.diplomaanahit.dtos.StudentDTO;
-import com.example.diplomaanahit.entities.StudentEntity;
+import com.example.diplomaanahit.entities.Student;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring")
-public interface StudentMapper {
-    StudentMapper INSTANCE = Mappers.getMapper(StudentMapper.class);
+@Component
+public class StudentMapper {
 
-    @Mapping(source = "academyGroup.id", target = "academyGroupId")
-    StudentDTO toDTO(StudentEntity entity);
 
-    @Mapping(source = "academyGroupId", target = "academyGroup.id")
-    StudentEntity toEntity(StudentDTO dto);
+    public StudentDTO toDTO(Student entity){
+        StudentDTO dto = new StudentDTO();
+        dto.setId(entity.getId());
+        dto.setStudentName(entity.getName());
+        dto.setEmail(entity.getEmail());
+        return dto;
+    }
+
 }

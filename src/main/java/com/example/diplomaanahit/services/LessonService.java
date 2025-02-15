@@ -1,11 +1,15 @@
 package com.example.diplomaanahit.services;
 
 
-import com.example.diplomaanahit.entities.LessonEntity;
+import com.example.diplomaanahit.dtos.LessonDTO;
+import com.example.diplomaanahit.entities.Lesson;
+import com.example.diplomaanahit.entities.Subject;
 import com.example.diplomaanahit.repositories.LessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -13,8 +17,33 @@ public class LessonService {
     @Autowired
     private LessonRepository repository;
 
-    public LessonEntity findById(Integer id) {
-        Optional<LessonEntity> op = repository.findById(id);
+    public Lesson findById(Long id) {
+        Optional<Lesson> op = repository.findById(id);
         return op.orElse(null);
+    }
+
+
+
+    public List<Lesson> findAllByStudentGroup(Subject subject) {
+       return repository.findAllByAcademyGroup(subject.getId());
+    }
+
+    public List<LessonDTO> toDTOList(List<Lesson> list) {
+        List<LessonDTO> dtoList = new ArrayList<>();
+        for(Lesson entity : list){
+           dtoList.add(toDTO(entity));
+        }
+        return dtoList;
+    }
+
+    public LessonDTO toDTO(Lesson entity) {
+        LessonDTO dto = new LessonDTO();
+        dto.setId(entity.getId());
+        dto.setType(entity.getType());
+        return dto;
+    }
+
+    public List<Lesson> findBySubject(Subject subject) {
+        return repository.findBySubject(subject);
     }
 }

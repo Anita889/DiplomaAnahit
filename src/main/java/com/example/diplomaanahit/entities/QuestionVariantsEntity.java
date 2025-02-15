@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,9 +36,12 @@ public class QuestionVariantsEntity {
     @Column(name = "variant3")
     private String variant3;
 
+    @Column(name = "correct_answer_variant_number")
+    private Integer number;
+
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     @JoinColumn(name = "lesson_id")
-    private LessonEntity lesson;
+    private Lesson lesson;
 
     public Integer getId() {
         return id;
@@ -59,7 +63,7 @@ public class QuestionVariantsEntity {
         return variant3;
     }
 
-    public LessonEntity getLesson() {
+    public Lesson getLesson() {
         return lesson;
     }
 
@@ -83,7 +87,15 @@ public class QuestionVariantsEntity {
         this.variant3 = variant3;
     }
 
-    public void setLesson(LessonEntity lesson) {
+    public void setLesson(Lesson lesson) {
         this.lesson = lesson;
+    }
+
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 }

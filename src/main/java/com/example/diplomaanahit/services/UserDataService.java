@@ -3,9 +3,12 @@ package com.example.diplomaanahit.services;
 
 import com.example.diplomaanahit.entities.UserEntity;
 import com.example.diplomaanahit.repositories.UserRepository;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserDataService {
@@ -25,5 +28,16 @@ public class UserDataService {
 
     public UserEntity findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+
+    public UserEntity findById(int userId) {
+        Optional<UserEntity> userOp =userRepository.findById(userId);
+        if(userOp.isPresent()) {
+            return userOp.get();
+        }
+        else {
+            return null;
+        }
     }
 }

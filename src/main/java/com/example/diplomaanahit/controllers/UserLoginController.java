@@ -2,8 +2,9 @@ package com.example.diplomaanahit.controllers;
 
 
 import com.example.diplomaanahit.dtos.AuthDTO;
-import com.example.diplomaanahit.entities.LecturerEntity;
-import com.example.diplomaanahit.entities.StudentEntity;
+import com.example.diplomaanahit.dtos.UserDTO;
+import com.example.diplomaanahit.entities.Lecturer;
+import com.example.diplomaanahit.entities.Student;
 import com.example.diplomaanahit.entities.UserEntity;
 import com.example.diplomaanahit.mapper.UserMapper;
 import com.example.diplomaanahit.security.AuthenticationTokenService;
@@ -62,10 +63,13 @@ public class UserLoginController {
 
         AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
         String token = auth.getAccessToken();
+        UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
         return ResponseEntity.ok(Map.of(
                 "accessToken", token,
-                "user", userEntity
-        ));    }
+                "user", userDTO,
+                "role", auth.getUser().getRegistrationType()
+        ));
+    }
 
     @RequestMapping(value = "password/change", method = RequestMethod.GET)
     public ResponseEntity passwordChange(@RequestParam String email) throws Exception {
@@ -90,8 +94,8 @@ public class UserLoginController {
         userEntity.setEmail(authDTO.getEmail());
         userEntity.setLoginDate(LocalDate.now());
         UserEntity user = userDataService.findByEmail(authDTO.getEmail());
-        StudentEntity student = studentService.findByEmail(authDTO.getEmail());
-        LecturerEntity lecturer = lecturerService.findByEmail(authDTO.getEmail());
+        Student student = studentService.findByEmail(authDTO.getEmail());
+        Lecturer lecturer = lecturerService.findByEmail(authDTO.getEmail());
         if(user != null){
             throw new Exception("We have this user!!");
         }
@@ -102,9 +106,15 @@ public class UserLoginController {
             userEntity.setLecturer(lecturer);
         }
         userDataService.save(userEntity);
-        return ResponseEntity.ok(false);
-        }
-
+        AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
+        String token = auth.getAccessToken();
+        UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
+        return ResponseEntity.ok(Map.of(
+                "accessToken", token,
+                "user", userDTO,
+                "role", auth.getUser().getRegistrationType()
+        ));
+    }
 }
 
 

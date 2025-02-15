@@ -45,6 +45,7 @@ public class AuthenticationTokenService {
         String accessToken = TokenUtils.generateToken(userDetails, role, accessTokenSecret, 3600L);
         UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
 
+        userDTO.setRegistrationType(role.getLabel());
         AuthDTO authDTO = new AuthDTO();
         authDTO.setUser(userDTO);
         authDTO.setAccessToken(accessToken);

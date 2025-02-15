@@ -1,5 +1,6 @@
 package com.example.diplomaanahit.dtos;
 
+import com.example.diplomaanahit.entities.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -9,26 +10,27 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * DTO for {@link com.example.diplomaanahit.entities.StudentEntity}
+ * DTO for {@link Student}
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Component
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentDTO implements Serializable {
-    private Integer id;
+    private Long id;
     private String studentName;
     private String studentSurname;
     private LocalDate studentBirthDate;
     private Double mog;
     private String studentCity;
     private Integer academyGroupId;
+    private String email;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -78,6 +80,15 @@ public class StudentDTO implements Serializable {
 
     public void setAcademyGroupId(Integer academyGroupId) {
         this.academyGroupId = academyGroupId;
+    }
+
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
 
