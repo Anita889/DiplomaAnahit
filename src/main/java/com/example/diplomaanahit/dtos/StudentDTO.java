@@ -2,6 +2,10 @@ package com.example.diplomaanahit.dtos;
 
 import com.example.diplomaanahit.entities.Student;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,18 +16,21 @@ import java.time.LocalDate;
 /**
  * DTO for {@link Student}
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@Component
+@JsonInclude(JsonInclude.Include.NON_NULL) // Exclude null fields from the response
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentDTO implements Serializable {
+
     private Long id;
     private String studentName;
     private String studentSurname;
+
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate studentBirthDate;
     private Double mog;
     private String studentCity;
-    private Integer academyGroupId;
+    private Long academyGroupId;
     private String email;
 
     public Long getId() {
@@ -74,11 +81,11 @@ public class StudentDTO implements Serializable {
         this.studentCity = studentCity;
     }
 
-    public Integer getAcademyGroupId() {
+    public Long getAcademyGroupId() {
         return academyGroupId;
     }
 
-    public void setAcademyGroupId(Integer academyGroupId) {
+    public void setAcademyGroupId(Long academyGroupId) {
         this.academyGroupId = academyGroupId;
     }
 

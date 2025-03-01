@@ -74,6 +74,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/user/authentication/**",
+                                "api/students/**",
+                                "api/lecturers/**",
                                 "/api/user/health/**",
                                 "/api/test/**",
                                 // Swagger endpoints

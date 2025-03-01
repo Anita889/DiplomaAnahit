@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LecturerService {
+public class LecturerDataService {
     @Autowired
     private LecturerRepository lecturerRepository;
 
@@ -17,5 +17,13 @@ public class LecturerService {
 
     public Lecturer findByEmail(String email) {
         return  lecturerRepository.findByEmail(email);
+    }
+
+    public void saveLecturer(Lecturer lecturer) {
+        lecturerRepository.save(lecturer);
+    }
+
+    public void deleteLecturer(Lecturer lecturer) {
+        lecturerRepository.delete(lecturer);
     }
 }

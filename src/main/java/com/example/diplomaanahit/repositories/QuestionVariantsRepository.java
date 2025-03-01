@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface QuestionVariantsRepository extends JpaRepository<QuestionVariantsEntity, Integer> {
+public interface QuestionVariantsRepository extends JpaRepository<QuestionVariantsEntity, Long> {
 
-    @Query(nativeQuery = true, value = "SELECT * FROM question_variants_entity WHERE lesson-id = :lessonId")
+    @Query(nativeQuery = true, value = "SELECT * FROM question_variants_entity WHERE lesson_id = :lessonId")
     List<QuestionVariantsEntity> findQuestionVariantsListByLessonId(@Param("lessonId") Long lessonId);
 }

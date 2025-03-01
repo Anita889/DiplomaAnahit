@@ -1,12 +1,15 @@
 package com.example.diplomaanahit.dtos;
 
-import java.util.List;
+import com.example.diplomaanahit.entities.Subject;
+import java.time.LocalDate;
 
 public class LessonDTO {
     private Long id;
     private String type;
 
-    private List<QuestionVariantsStudentDTO> questionVariants;
+    private LocalDate availableDate;
+    private Subject subject;
+
     public Long getId() {
         return id;
     }
@@ -23,11 +26,19 @@ public class LessonDTO {
         this.type = type;
     }
 
-    public List<QuestionVariantsStudentDTO> getQuestionVariants() {
-        return questionVariants;
+    public LocalDate getAvailableDate() {
+        return availableDate;
     }
 
-    public void setQuestionVariants(List<QuestionVariantsStudentDTO> questionVariants) {
-        this.questionVariants = questionVariants;
+    public void setAvailableDate(LocalDate availableDate) {
+        this.availableDate = availableDate;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 }

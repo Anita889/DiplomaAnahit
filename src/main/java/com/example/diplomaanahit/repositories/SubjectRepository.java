@@ -13,13 +13,7 @@ import java.util.List;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
 
 
-    @Query(nativeQuery = true, value = "SELECT s.name AS subject_name\n" +
-            "FROM student_group sg\n" +
-            "JOIN speciality sp ON sg.speciality_id = sp.id\n" +
-            "JOIN department d ON sp.department_id = d.id\n" +
-            "JOIN faculty f ON d.faculty_id = f.id\n" +
-            "JOIN lesson l ON l.subject_id = sp.id \n" +
-            "JOIN subject s ON l.subject_id = s.id\n" +
-            "WHERE sg.id = :studentGroupId")
+    @Query(nativeQuery = true, value = "select * from subject where id in " +
+            "(select subject_id from student_group_subject where student_group_id=:studentGroupId)")
     List<Subject> findAllByStudentGroup(@Param("studentGroupId") Long studentGroupId);
 }

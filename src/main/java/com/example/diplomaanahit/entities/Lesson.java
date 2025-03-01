@@ -1,5 +1,6 @@
 package com.example.diplomaanahit.entities;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,8 +20,10 @@ public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "type")
     private String type; // Lecture, Lab, etc.
 
+    @Column(name = "available_date")
     private LocalDate availableDate;
 
     @ManyToOne

@@ -1,6 +1,7 @@
 CREATE TABLE grade (
                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
                        score INT NOT NULL,
+                       max_score INT NOT NULL,
                        student_id BIGINT,
                        assessment_type_id BIGINT,
                        FOREIGN KEY (student_id) REFERENCES student(id),

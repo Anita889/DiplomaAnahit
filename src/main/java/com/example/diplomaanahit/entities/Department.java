@@ -28,6 +28,9 @@ public class Department {
     @OneToMany(mappedBy = "department")
     private Set<Speciality> specialities;
 
+    @OneToMany(mappedBy = "department")
+    private Set<Lecturer> lecturers;
+
     // Getters and Setters
     public Long getId() {
         return id;
@@ -59,5 +62,13 @@ public class Department {
 
     public void setSpecialities(Set<Speciality> specialities) {
         this.specialities = specialities;
+    }
+
+    public Set<Lecturer> getLecturers() {
+        return lecturers;
+    }
+
+    public void setLecturers(Set<Lecturer> lecturers) {
+        this.lecturers = lecturers;
     }
 }

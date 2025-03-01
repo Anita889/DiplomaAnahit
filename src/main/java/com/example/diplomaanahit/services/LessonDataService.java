@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class LessonService {
+public class LessonDataService {
     @Autowired
     private LessonRepository repository;
 

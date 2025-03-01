@@ -1,7 +1,18 @@
 package com.example.diplomaanahit.dtos;
 
-public class QuestionAndVariantsForLecturerDTO {
-    private Integer  id;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+
+@JsonInclude(JsonInclude.Include.NON_NULL) // Exclude null fields from the response
+@NoArgsConstructor
+@AllArgsConstructor
+public class QuestionVariantsLecturerDTO implements Serializable {
+
+    private Long  id;
 
     private String question;
 
@@ -11,13 +22,13 @@ public class QuestionAndVariantsForLecturerDTO {
 
     private String variant3;
 
-    private String correctVariant;
+    private String correctAnswer;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -53,11 +64,11 @@ public class QuestionAndVariantsForLecturerDTO {
         this.variant3 = variant3;
     }
 
-    public String getCorrectVariant() {
-        return correctVariant;
+    public String getCorrectAnswer() {
+        return correctAnswer;
     }
 
-    public void setCorrectVariant(String correctVariant) {
-        this.correctVariant = correctVariant;
+    public void setCorrectAnswer(String correctAnswer) {
+        this.correctAnswer = correctAnswer;
     }
 }

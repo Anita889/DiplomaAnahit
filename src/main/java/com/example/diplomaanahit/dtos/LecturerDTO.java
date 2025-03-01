@@ -6,74 +6,64 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Component
 @NoArgsConstructor
 @AllArgsConstructor
 public class LecturerDTO implements Serializable {
-    private Integer id;
-    private String lecturerName;
-    private String lecturerSurname;
-    private LocalDate lecturerBirthDate;
-    private Double criteria;
-    private String lecturerCity;
-    private String subject;
+    private Long id;
+    private String name;
+    private String surName;
+    private String email;
+    private String password;
+    private Set<LessonDTO> lessons;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public String getLecturerName() {
-        return lecturerName;
+    public String getName() {
+        return name;
     }
 
-    public void setLecturerName(String lecturerName) {
-        this.lecturerName = lecturerName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLecturerSurname() {
-        return lecturerSurname;
+    public String getSurName() {
+        return surName;
     }
 
-    public void setLecturerSurname(String lecturerSurname) {
-        this.lecturerSurname = lecturerSurname;
+    public void setSurName(String surName) {
+        this.surName = surName;
     }
 
-    public LocalDate getLecturerBirthDate() {
-        return lecturerBirthDate;
+    public String getEmail() {
+        return email;
     }
 
-    public void setLecturerBirthDate(LocalDate lecturerBirthDate) {
-        this.lecturerBirthDate = lecturerBirthDate;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public Double getCriteria() {
-        return criteria;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCriteria(Double criteria) {
-        this.criteria = criteria;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public String getLecturerCity() {
-        return lecturerCity;
+    public Set<LessonDTO> getLessons() {
+        return lessons;
     }
 
-    public void setLecturerCity(String lecturerCity) {
-        this.lecturerCity = lecturerCity;
-    }
-
-    public String getSubject() {
-        return subject;
-    }
-
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setLessons(Set<LessonDTO> lessons) {
+        this.lessons = lessons;
     }
 }

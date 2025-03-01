@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface StudentGroupRepository extends JpaRepository<StudentGroup, Integer> {
-    Optional<StudentGroup> findById(Integer id);
+public interface StudentGroupRepository extends JpaRepository<StudentGroup, Long> {
+    Optional<StudentGroup> findById(Long id);
 
     void removeById(Integer id);
 }

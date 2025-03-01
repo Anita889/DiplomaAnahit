@@ -31,7 +31,7 @@ public class UserDataService {
     }
 
 
-    public UserEntity findById(int userId) {
+    public UserEntity findById(Long userId) {
         Optional<UserEntity> userOp =userRepository.findById(userId);
         if(userOp.isPresent()) {
             return userOp.get();

@@ -19,6 +19,8 @@ public class Grade {
     private Long id;
     private Integer score;
 
+    private Integer maxScore;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -58,5 +60,13 @@ public class Grade {
 
     public void setAssessmentType(AssessmentType assessmentType) {
         this.assessmentType = assessmentType;
+    }
+
+    public Integer getMaxScore() {
+        return maxScore;
+    }
+
+    public void setMaxScore(Integer maxScore) {
+        this.maxScore = maxScore;
     }
 }

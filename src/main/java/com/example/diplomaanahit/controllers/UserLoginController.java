@@ -8,8 +8,8 @@ import com.example.diplomaanahit.entities.Student;
 import com.example.diplomaanahit.entities.UserEntity;
 import com.example.diplomaanahit.mapper.UserMapper;
 import com.example.diplomaanahit.security.AuthenticationTokenService;
-import com.example.diplomaanahit.services.LecturerService;
-import com.example.diplomaanahit.services.StudentService;
+import com.example.diplomaanahit.services.LecturerDataService;
+import com.example.diplomaanahit.services.StudentDataService;
 import com.example.diplomaanahit.services.UserDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,15 +33,14 @@ public class UserLoginController {
     @Autowired
     private UserDataService userDataService;
 
-
     @Autowired
     private UserMapper userMapper;
 
     @Autowired
-    private StudentService studentService;
+    private StudentDataService studentService;
 
     @Autowired
-    private LecturerService lecturerService;
+    private LecturerDataService lecturerService;
 
     @Value("${security.token.secret}")
     private  String accessTokenSecret;

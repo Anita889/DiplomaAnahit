@@ -13,19 +13,21 @@ import com.example.diplomaanahit.entities.Lesson;
 import com.example.diplomaanahit.entities.QuestionVariantsEntity;
 import com.example.diplomaanahit.entities.Student;
 import com.example.diplomaanahit.entities.Subject;
-import com.example.diplomaanahit.mapper.StudentMapper;
-import com.example.diplomaanahit.services.LessonService;
-import com.example.diplomaanahit.services.QuestionVariantsService;
+import com.example.diplomaanahit.mapper.Mapper;
+import com.example.diplomaanahit.services.LessonDataService;
+import com.example.diplomaanahit.services.QuestionVariantsDataService;
 import com.example.diplomaanahit.services.SubjectDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "api/students/{studentId}")
@@ -34,13 +36,13 @@ public class StudentController {
     private StudentTestCalculationService studentService;
 
     @Autowired
-    private LessonService lessonService;
+    private LessonDataService lessonService;
 
     @Autowired
-    private QuestionVariantsService questionVariantsService;
+    private QuestionVariantsDataService questionVariantsService;
 
     @Autowired
-    private StudentMapper studentMapper;
+    private Mapper mapper;
 
     @Autowired
     private SubjectDataService subjectDataService;
@@ -51,9 +53,10 @@ public class StudentController {
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
-        StudentDTO studentDTO = studentMapper.toDTO(student);
-        return ResponseEntity.ok(studentDTO);
-    }
+        StudentDTO studentDTO = mapper.getLecturerEntityToDTO(student);
+        return ResponseEntity.ok(Map.of(
+                "user", studentDTO
+        ));    }
 
     @RequestMapping(value = "subjects", method = RequestMethod.GET)
     public ResponseEntity<?> getSubjects(@PathVariable Long studentId) throws Exception {
@@ -97,7 +100,7 @@ public class StudentController {
     }
 
     @RequestMapping(value = "lesson/{lessonId}", method = RequestMethod.POST)
-    public ResponseEntity<?> submitAnswers(@PathVariable Long studentId, @PathVariable Long lessonId, List<QuestionsAnswerDTO> questionsAnswerDTOS) throws Exception {
+    public ResponseEntity<?> submitAnswers(@PathVariable Long studentId, @PathVariable Long lessonId,@RequestBody List<QuestionsAnswerDTO> questionsAnswerDTOS) throws Exception {
         Student student = studentService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
@@ -112,7 +115,7 @@ public class StudentController {
         Grade grade = studentService.submitAnswers(student, lesson, questionsAnswerDTOS);
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setDescription(grade.getAssessmentType().getName());
-        gradeDTO.setGrade(grade.getScore() + "/" +20);
+        gradeDTO.setGrade(grade.getScore() + "/" +questionsAnswerDTOS.size());
         return ResponseEntity.ok(gradeDTO);
     }
 }

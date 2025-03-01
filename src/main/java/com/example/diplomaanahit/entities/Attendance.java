@@ -18,6 +18,8 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Boolean isPresent;
+
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
@@ -49,5 +51,13 @@ public class Attendance {
 
     public void setLesson(Lesson lesson) {
         this.lesson = lesson;
+    }
+
+    public Boolean getIsPresent() {
+        return isPresent;
+    }
+
+    public void setIsPresent(Boolean isPresent) {
+        this.isPresent = isPresent;
     }
 }

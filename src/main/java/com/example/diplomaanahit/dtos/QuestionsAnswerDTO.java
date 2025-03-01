@@ -1,5 +1,9 @@
 package com.example.diplomaanahit.dtos;
 
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class QuestionsAnswerDTO {
     private Long id;
 

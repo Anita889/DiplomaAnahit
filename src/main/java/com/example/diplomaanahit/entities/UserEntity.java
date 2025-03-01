@@ -38,6 +38,10 @@ public class UserEntity implements Persistable<Integer> {
     @JoinColumn(name = "lecturer_id")
     private Lecturer lecturer;
 
+    @ManyToOne
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
+
     public String getRegistrationType() {
         return registrationType;
     }
@@ -97,5 +101,13 @@ public class UserEntity implements Persistable<Integer> {
 
     public void setLecturer(Lecturer lecturer) {
         this.lecturer = lecturer;
+    }
+
+    public Admin getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
     }
 }

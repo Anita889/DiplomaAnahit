@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -28,6 +30,14 @@ public class StudentGroup {
     @OneToMany(mappedBy = "studentGroup")
     private Set<Student> students;
 
+
+    @ManyToMany
+    @JoinTable(
+            name = "student_group_subject",  // Join table to represent many-to-many relationship
+            joinColumns = @JoinColumn(name = "student_group_id"),  // Foreign key for the student
+            inverseJoinColumns = @JoinColumn(name = "subject_id")  // Foreign key for the subject
+    )
+    private Set<Subject> subjects;
     public Long getId() {
         return id;
     }

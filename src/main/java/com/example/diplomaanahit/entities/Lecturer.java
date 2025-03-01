@@ -16,7 +16,10 @@ public class Lecturer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private String surName;
     private String email;
+    private String password;
+    private String level;
 
     @ManyToMany
     @JoinTable(
@@ -26,6 +29,9 @@ public class Lecturer {
     )
     private Set<Lesson> lessons;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
     public Long getId() {
         return id;
     }
@@ -42,12 +48,12 @@ public class Lecturer {
         this.name = name;
     }
 
-    public Set<Lesson> getLessons() {
-        return lessons;
+    public String getSurName() {
+        return surName;
     }
 
-    public void setLessons(Set<Lesson> lessons) {
-        this.lessons = lessons;
+    public void setSurName(String surName) {
+        this.surName = surName;
     }
 
     public String getEmail() {
@@ -56,5 +62,37 @@ public class Lecturer {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Set<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(Set<Lesson> lessons) {
+        this.lessons = lessons;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 }

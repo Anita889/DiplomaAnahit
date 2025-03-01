@@ -22,7 +22,7 @@ public class QuestionVariantsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer  id;
+    private Long  id;
 
     @Column(name = "question")
     private String question;
@@ -43,7 +43,7 @@ public class QuestionVariantsEntity {
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -67,7 +67,7 @@ public class QuestionVariantsEntity {
         return lesson;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

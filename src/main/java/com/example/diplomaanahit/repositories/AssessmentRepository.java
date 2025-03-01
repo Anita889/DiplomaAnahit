@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AssessmentRepository extends JpaRepository<AssessmentType, Long> {
-    AssessmentType findByAssessmentType(String assessmentType);
+    AssessmentType findByName(String assessmentType);
 }

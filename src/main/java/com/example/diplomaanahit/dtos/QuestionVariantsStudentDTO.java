@@ -4,9 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.stereotype.Component;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Component
 public class QuestionVariantsStudentDTO {
-    private Integer  id;
+    private Long  id;
 
     private String question;
 
@@ -17,7 +16,7 @@ public class QuestionVariantsStudentDTO {
     private String variant3;
 
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -38,7 +37,7 @@ public class QuestionVariantsStudentDTO {
     }
 
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

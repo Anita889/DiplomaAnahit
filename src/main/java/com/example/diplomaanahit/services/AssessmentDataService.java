@@ -7,12 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AssessmentService {
+public class AssessmentDataService {
 
     @Autowired
     private AssessmentRepository repository;
 
     public AssessmentType findByAssessmentType(String assessmentType) {
-        return repository.findByAssessmentType(assessmentType);
+        return repository.findByName(assessmentType);
     }
 }
