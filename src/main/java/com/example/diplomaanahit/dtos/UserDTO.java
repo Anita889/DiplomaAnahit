@@ -13,17 +13,27 @@ import java.time.LocalDate;
 @Component
 public class UserDTO implements Serializable {
     private Integer id;
+
+    private Integer userId;
     private String email;
     private String password;
     private String registrationType;
     private LocalDate loginDate;
 
-    private StudentDTO student;
-
-    private LecturerDTO lecturer;
-
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getEmail() {
@@ -42,10 +52,6 @@ public class UserDTO implements Serializable {
         return loginDate;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -62,19 +68,4 @@ public class UserDTO implements Serializable {
         this.loginDate = loginDate;
     }
 
-    public StudentDTO getStudentDTO() {
-        return student;
-    }
-
-    public LecturerDTO getLecturerDTO() {
-        return lecturer;
-    }
-
-    public void setStudentDTO(StudentDTO student) {
-        this.student = student;
-    }
-
-    public void setLecturerDTO(LecturerDTO lecturer) {
-        this.lecturer = lecturer;
-    }
 }

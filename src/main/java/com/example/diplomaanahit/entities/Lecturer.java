@@ -15,11 +15,21 @@ public class Lecturer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "sur_name")
     private String surName;
+
+    @Column(name = "email")
     private String email;
+
+    @Column(name = "password")
     private String password;
-    private String level;
+
+    @Column(name = "rating")
+    private Double rating;
 
     @ManyToMany
     @JoinTable(
@@ -88,11 +98,11 @@ public class Lecturer {
         this.department = department;
     }
 
-    public String getLevel() {
-        return level;
+    public Double getRating() {
+        return rating;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 }

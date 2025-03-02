@@ -24,14 +24,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(value = "api/lecturers/{lecturerId}")
+@RequestMapping(value = "api/user/{userId}/lecturers/{lecturerId}")
 public class LecturerController {
     @Autowired
     private LecturerDataService lecturerService;
@@ -52,9 +51,9 @@ public class LecturerController {
     private UserDataService userService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getLecturer(@PathVariable Long lecturerId) throws Exception {
-        UserEntity userEntity = userService.findById(lecturerId);
-        Lecturer lecturer = lecturerService.findById(userEntity.getLecturer().getId());
+    public ResponseEntity<?> getLecturer(@PathVariable Long userId, @PathVariable Long lecturerId) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -63,10 +62,11 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "subjects", method = RequestMethod.GET)
-    public ResponseEntity<?> getSubjects(@PathVariable Long lecturerId) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> getSubjects(@PathVariable Long userId, @PathVariable Long lecturerId) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
-            throw new Exception("Student with this id is not exist");
+            throw new Exception("Lecturer with this id is not exist");
         }
         Set<Subject> subjects = lecturer.getLessons().stream().map(Lesson::getSubject).collect(Collectors.toSet());
         Set<SubjectDTO> subjectDTOS = mapper.getStudentEntitiesToDTOs(subjects);
@@ -74,8 +74,9 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "subjects/{subjectId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getLessonsOfSubject(@PathVariable Long lecturerId, @PathVariable Long subjectId) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> getLessonsOfSubject(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long subjectId) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -89,8 +90,9 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "question/{questionId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getQuestion(@PathVariable Long lecturerId, @PathVariable Long questionId) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> getQuestion(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long questionId) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -103,8 +105,9 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "lesson/{lessonId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getQuestions(@PathVariable Long lecturerId, @PathVariable Long lessonId) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> getQuestions(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long lessonId) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -118,8 +121,9 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "lesson/{lessonId}/questions/add", method = RequestMethod.POST)
-    public ResponseEntity<?> addQuestions(@PathVariable Long lecturerId, @PathVariable Long lessonId, @RequestBody QuestionVariantsLecturerDTO question) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> addQuestions(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long lessonId, @RequestBody QuestionVariantsLecturerDTO question) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -133,8 +137,9 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "questions/{questionId}/remove", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteQuestion(@PathVariable Long lecturerId, @PathVariable Long questionId) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> deleteQuestion(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long questionId) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -147,8 +152,9 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "questions/{questionId}/update", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateQuestion(@PathVariable Long lecturerId,@PathVariable Long questionId, @RequestBody QuestionVariantsLecturerDTO question) throws Exception {
-        Lecturer lecturer = userService.findById(lecturerId).getLecturer();
+    public ResponseEntity<?> updateQuestion(@PathVariable Long userId, @PathVariable Long lecturerId,@PathVariable Long questionId, @RequestBody QuestionVariantsLecturerDTO question) throws Exception {
+        UserEntity userEntity = userService.findById(userId);
+        Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }

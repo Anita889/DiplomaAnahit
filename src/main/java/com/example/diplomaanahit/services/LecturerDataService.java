@@ -1,10 +1,14 @@
 package com.example.diplomaanahit.services;
 
 
+import com.example.diplomaanahit.entities.Department;
 import com.example.diplomaanahit.entities.Lecturer;
 import com.example.diplomaanahit.repositories.LecturerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class LecturerDataService {
@@ -25,5 +29,9 @@ public class LecturerDataService {
 
     public void deleteLecturer(Lecturer lecturer) {
         lecturerRepository.delete(lecturer);
+    }
+
+    public List<Lecturer> findByDepartment(Department department) {
+        return lecturerRepository.findByDepartment(department.getId());
     }
 }

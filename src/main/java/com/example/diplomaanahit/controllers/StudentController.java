@@ -19,6 +19,7 @@ import com.example.diplomaanahit.services.QuestionVariantsDataService;
 import com.example.diplomaanahit.services.SubjectDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "api/students/{studentId}")
+@RequestMapping(value = "api/user/{userId}/student/{studentId}")
 public class StudentController {
     @Autowired
     private StudentTestCalculationService studentService;
@@ -48,18 +49,17 @@ public class StudentController {
     private SubjectDataService subjectDataService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
-    public ResponseEntity<?> getStudent(@PathVariable Long studentId) throws Exception {
+    public ResponseEntity<?> getStudent(@PathVariable Long userId, @PathVariable Long studentId) throws Exception {
         Student student = studentService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
         StudentDTO studentDTO = mapper.getLecturerEntityToDTO(student);
-        return ResponseEntity.ok(Map.of(
-                "user", studentDTO
-        ));    }
+        return ResponseEntity.ok(studentDTO);
+    }
 
     @RequestMapping(value = "subjects", method = RequestMethod.GET)
-    public ResponseEntity<?> getSubjects(@PathVariable Long studentId) throws Exception {
+    public ResponseEntity<?> getSubjects(@PathVariable Long userId, @PathVariable Long studentId) throws Exception {
         Student student = studentService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
@@ -70,7 +70,7 @@ public class StudentController {
     }
 
     @RequestMapping(value = "subjects/{subjectId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getLessonsOfSubject(@PathVariable Long studentId, @PathVariable Long subjectId) throws Exception {
+    public ResponseEntity<?> getLessonsOfSubject(@PathVariable Long userId, @PathVariable Long studentId, @PathVariable Long subjectId) throws Exception {
         Student student = studentService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
@@ -85,7 +85,7 @@ public class StudentController {
     }
 
     @RequestMapping(value = "lesson/{lessonId}", method = RequestMethod.GET)
-    public ResponseEntity<?> getQuestionsAndVariants(@PathVariable Long studentId, @PathVariable Long lessonId) throws Exception {
+    public ResponseEntity<?> getQuestionsAndVariants(@PathVariable Long userId, @PathVariable Long studentId, @PathVariable Long lessonId) throws Exception {
         Student student = studentService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
@@ -100,7 +100,7 @@ public class StudentController {
     }
 
     @RequestMapping(value = "lesson/{lessonId}", method = RequestMethod.POST)
-    public ResponseEntity<?> submitAnswers(@PathVariable Long studentId, @PathVariable Long lessonId,@RequestBody List<QuestionsAnswerDTO> questionsAnswerDTOS) throws Exception {
+    public ResponseEntity<?> submitAnswers(@PathVariable Long userId, @PathVariable Long studentId, @PathVariable Long lessonId,@RequestBody List<QuestionsAnswerDTO> questionsAnswerDTOS) throws Exception {
         Student student = studentService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");

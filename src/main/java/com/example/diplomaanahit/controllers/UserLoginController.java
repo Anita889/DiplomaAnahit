@@ -3,11 +3,14 @@ package com.example.diplomaanahit.controllers;
 
 import com.example.diplomaanahit.dtos.AuthDTO;
 import com.example.diplomaanahit.dtos.UserDTO;
+import com.example.diplomaanahit.entities.Admin;
 import com.example.diplomaanahit.entities.Lecturer;
 import com.example.diplomaanahit.entities.Student;
 import com.example.diplomaanahit.entities.UserEntity;
 import com.example.diplomaanahit.mapper.UserMapper;
+import com.example.diplomaanahit.repositories.LecturerRepository;
 import com.example.diplomaanahit.security.AuthenticationTokenService;
+import com.example.diplomaanahit.services.AdminDataService;
 import com.example.diplomaanahit.services.LecturerDataService;
 import com.example.diplomaanahit.services.StudentDataService;
 import com.example.diplomaanahit.services.UserDataService;
@@ -45,6 +48,9 @@ public class UserLoginController {
     @Value("${security.token.secret}")
     private  String accessTokenSecret;
 
+    @Autowired
+    private AdminDataService adminService;
+
 
     @RequestMapping(value = "login", method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody AuthDTO authDTO) throws Exception {
@@ -62,10 +68,9 @@ public class UserLoginController {
 
         AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
         String token = auth.getAccessToken();
-        UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
         return ResponseEntity.ok(Map.of(
                 "accessToken", token,
-                "user", userDTO,
+                "user", auth.getUser(),
                 "role", auth.getUser().getRegistrationType()
         ));
     }
@@ -95,6 +100,7 @@ public class UserLoginController {
         UserEntity user = userDataService.findByEmail(authDTO.getEmail());
         Student student = studentService.findByEmail(authDTO.getEmail());
         Lecturer lecturer = lecturerService.findByEmail(authDTO.getEmail());
+        Admin admin = adminService.findByEmail(authDTO.getEmail());
         if(user != null){
             throw new Exception("We have this user!!");
         }
@@ -103,6 +109,9 @@ public class UserLoginController {
         }
         if(lecturer != null){
             userEntity.setLecturer(lecturer);
+        }
+        if(admin != null){
+            userEntity.setAdmin(admin);
         }
         userDataService.save(userEntity);
         AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);

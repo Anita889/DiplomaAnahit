@@ -141,8 +141,8 @@ public class Mapper {
         return departmentDTO;
     }
 
-    public Set<LecturerDTO> getLecturerEntitiesToDTOs(Set<Lecturer> lecturers) {
-        return lecturers.stream().map(this::getLecturerEntityToDTO).collect(Collectors.toSet());
+    public List<LecturerDTO> getLecturerEntitiesToDTOs(List<Lecturer> lecturers) {
+        return lecturers.stream().map(this::getLecturerEntityToDTO).collect(Collectors.toList());
     }
 
     public Set<StudentGroupDTO> getStudentGroupEntitiesToDTOs(Set<StudentGroup> studentGroups) {

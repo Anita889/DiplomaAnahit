@@ -16,6 +16,7 @@ public class LecturerDTO implements Serializable {
     private String name;
     private String surName;
     private String email;
+    private Double rating;
     private String password;
     private Set<LessonDTO> lessons;
 
@@ -65,5 +66,13 @@ public class LecturerDTO implements Serializable {
 
     public void setLessons(Set<LessonDTO> lessons) {
         this.lessons = lessons;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 }
