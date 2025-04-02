@@ -26,7 +26,7 @@ public class SecureUser implements UserDetails {
         this.grantedAuthorities = grantedAuthorities;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return userEntity.getId();
     }
 

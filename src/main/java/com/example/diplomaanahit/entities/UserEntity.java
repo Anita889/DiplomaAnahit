@@ -12,11 +12,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class UserEntity implements Persistable<Integer> {
+public class UserEntity implements Persistable<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer  id;
+    private Long  id;
 
     @Column(name = "email")
     private String email;
@@ -50,7 +50,7 @@ public class UserEntity implements Persistable<Integer> {
         this.registrationType = registrationType;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -67,7 +67,7 @@ public class UserEntity implements Persistable<Integer> {
         return password;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

@@ -1,10 +1,13 @@
 package com.example.diplomaanahit.services;
 
 
+import com.example.diplomaanahit.entities.Lesson;
 import com.example.diplomaanahit.entities.StudentGroup;
 import com.example.diplomaanahit.repositories.StudentGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class StudentGroupDataService {
@@ -21,5 +24,9 @@ public class StudentGroupDataService {
 
     public void deleteStudentGroup(StudentGroup studentGroup) {
        studentGroupRepository.delete(studentGroup);
+    }
+
+    public List<StudentGroup> findByIds(List<Long> studentGroupIds) {
+        return studentGroupRepository.findAllById(studentGroupIds);
     }
 }

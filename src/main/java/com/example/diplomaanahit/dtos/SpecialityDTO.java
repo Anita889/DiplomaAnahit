@@ -1,15 +1,17 @@
 package com.example.diplomaanahit.dtos;
 
 
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SpecialityDTO {
     private Long id;
     private String name;
 
     private DepartmentDTO department;
 
-    private Set<StudentGroupDTO> studentGroups;
+
 
     public Long getId() {
         return id;
@@ -35,11 +37,5 @@ public class SpecialityDTO {
         this.department = department;
     }
 
-    public Set<StudentGroupDTO> getStudentGroups() {
-        return studentGroups;
-    }
 
-    public void setStudentGroups(Set<StudentGroupDTO> studentGroups) {
-        this.studentGroups = studentGroups;
-    }
 }

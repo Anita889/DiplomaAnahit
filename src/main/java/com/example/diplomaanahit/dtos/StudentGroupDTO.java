@@ -1,7 +1,10 @@
 package com.example.diplomaanahit.dtos;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.Set;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class StudentGroupDTO {
     private Long id;
     private String name;

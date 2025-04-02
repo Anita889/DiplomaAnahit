@@ -22,6 +22,10 @@ public class Grade {
     private Integer maxScore;
 
     @ManyToOne
+    @JoinColumn(name = "lesson_id")
+    private Lesson lesson;
+
+    @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;
 
@@ -68,5 +72,13 @@ public class Grade {
 
     public void setMaxScore(Integer maxScore) {
         this.maxScore = maxScore;
+    }
+
+    public Lesson getLesson() {
+        return lesson;
+    }
+
+    public void setLesson(Lesson lesson) {
+        this.lesson = lesson;
     }
 }

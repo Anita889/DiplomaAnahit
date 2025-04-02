@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,14 @@ public class Lesson {
     @ManyToOne
     @JoinColumn(name = "subject_id")
     private Subject subject;
+
+    @ManyToOne
+    @JoinColumn(name = "lecturer_id", nullable = false) // Foreign key
+    private Lecturer lecturer;
+
+    @ManyToOne
+    @JoinColumn(name = "student_group_id", nullable = false) // Foreign key
+    private StudentGroup studentGroup;
 
     public Long getId() {
         return id;
@@ -60,5 +69,21 @@ public class Lesson {
 
     public void setAvailableDate(LocalDate availableDate) {
         this.availableDate = availableDate;
+    }
+
+    public Lecturer getLecturer() {
+        return lecturer;
+    }
+
+    public void setLecturer(Lecturer lecturer) {
+        this.lecturer = lecturer;
+    }
+
+    public StudentGroup getStudentGroup() {
+        return studentGroup;
+    }
+
+    public void setStudentGroup(StudentGroup studentGroup) {
+        this.studentGroup = studentGroup;
     }
 }

@@ -12,27 +12,27 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Component
 public class UserDTO implements Serializable {
-    private Integer id;
+    private Long id;
 
-    private Integer userId;
+    private Long userId;
     private String email;
     private String password;
     private String registrationType;
     private LocalDate loginDate;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

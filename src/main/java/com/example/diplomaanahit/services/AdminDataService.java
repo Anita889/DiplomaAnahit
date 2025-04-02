@@ -14,4 +14,8 @@ public class AdminDataService {
     public Admin findById(Long adminId) {
         return adminRepository.findById(adminId).get();
     }
+
+    public Admin findByEmail(String email) {
+        return adminRepository.findByEmail(email);
+    }
 }

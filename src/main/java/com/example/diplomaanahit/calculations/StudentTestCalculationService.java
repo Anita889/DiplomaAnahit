@@ -1,6 +1,7 @@
 package com.example.diplomaanahit.calculations;
 
 import com.example.diplomaanahit.dtos.QuestionsAnswerDTO;
+import com.example.diplomaanahit.dtos.StudentGroupDTO;
 import com.example.diplomaanahit.entities.AssessmentType;
 import com.example.diplomaanahit.entities.Attendance;
 import com.example.diplomaanahit.entities.Grade;
@@ -14,7 +15,10 @@ import com.example.diplomaanahit.services.StudentDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +55,7 @@ public class StudentTestCalculationService {
             }
         }
         Grade grade = new Grade();
+        grade.setLesson(lesson);
         grade.setStudent(student);
         grade.setScore(correctAnswers);
         grade.setMaxScore(total);
@@ -89,16 +94,33 @@ public class StudentTestCalculationService {
         Double factor = 0.0;
         for (Student student : studentGroup.getStudents()) {
             Set<Attendance> attendances = student.getAttendances();
-            int present = attendances.stream().map(Attendance::getIsPresent).toList().size();
-            double presentFactor = (double) present /attendances.size();
+            attendances.stream().filter(Attendance::getIsPresent).collect(Collectors.toSet());
             Set<Grade> grades = student.getGrades();
-            double totalScoreFactor = 0;
-            for (Grade grade : grades) {
-                totalScoreFactor += (double) grade.getScore() /grade.getMaxScore();
+            for(Attendance a : attendances){
+                grades.stream().filter(g -> g.getLesson().getId().equals(a.getLesson().getId()));
             }
-            totalScoreFactor /= grades.size();
-            factor += totalScoreFactor * presentFactor;
+
+            for (Grade g : grades){
+                factor += (double) g.getScore() /g.getMaxScore();
+            }
+//            factor += totalScoreFactor * presentFactor;
         }
-        return factor / studentGroup.getStudents().size() * 100;
+        return factor/studentGroup.getStudents().size();
+    }
+
+    public Double calculateDepartment(List<StudentGroup> studentGroups){
+        Double factor = 0.0;
+        for(StudentGroup s : studentGroups){
+            factor += calculateStudentGroup(s);
+        }
+        return factor/studentGroups.size();
+    }
+
+    public Map<String, Double> calculateDepartmentAndShow(List<StudentGroup> studentGroups){
+        Map<String, Double> f = new HashMap<>();
+        for(StudentGroup s : studentGroups){
+            f.put(s.getName(), calculateStudentGroup(s));
+        }
+        return f;
     }
 }

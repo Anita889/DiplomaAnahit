@@ -1,5 +1,7 @@
 package com.example.diplomaanahit.entities;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,6 +23,8 @@ public class StudentGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "name")
     private String name;
 
     @ManyToOne
@@ -30,6 +34,9 @@ public class StudentGroup {
     @OneToMany(mappedBy = "studentGroup")
     private Set<Student> students;
 
+
+    @OneToMany(mappedBy = "studentGroup")
+    private Set<Lesson> lessons;
 
     @ManyToMany
     @JoinTable(
@@ -68,5 +75,13 @@ public class StudentGroup {
 
     public void setStudents(Set<Student> students) {
         this.students = students;
+    }
+
+    public Set<Lesson> getLessons() {
+        return lessons;
+    }
+
+    public void setLessons(Set<Lesson> lessons) {
+        this.lessons = lessons;
     }
 }

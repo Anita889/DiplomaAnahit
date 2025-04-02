@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -32,19 +33,23 @@ public class AuthenticationTokenService {
     public static AuthDTO login(UserEntity userEntity, UserMapper userMapper, String accessTokenSecret) throws Exception {
         UserDetails userDetails = new SecureUser(userEntity, null);
         UserType role;
-
+        Long id = null;
         if(userEntity.getLecturer() != null) {
             role = UserType.LECTURER;
+            id= userEntity.getLecturer().getId();
         } else if (userEntity.getStudent() != null) {
             role = UserType.STUDENT;
-        } else if (userEntity.getEmail().equals("adminUNI@polytechnic.pol")) {
+            id = userEntity.getStudent().getId();
+        } else if (userEntity.getAdmin() != null) {
             role = UserType.ADMIN;
+            id = userEntity.getAdmin().getId();
         } else {
             role = UserType.USER;
         }
         String accessToken = TokenUtils.generateToken(userDetails, role, accessTokenSecret, 3600L);
         UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
-
+        userDTO.setUserId(userDTO.getId());
+        userDTO.setId(id);
         userDTO.setRegistrationType(role.getLabel());
         AuthDTO authDTO = new AuthDTO();
         authDTO.setUser(userDTO);

@@ -10,6 +10,7 @@ import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @NoArgsConstructor
@@ -71,4 +72,5 @@ public class Department {
     public void setLecturers(Set<Lecturer> lecturers) {
         this.lecturers = lecturers;
     }
+
 }

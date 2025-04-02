@@ -1,9 +1,14 @@
 package com.example.diplomaanahit.dtos;
 
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AdminDTO {
     private Long id;
     private String name;
-    private String surname;
+    private String surName;
     private String email;
     private String password;
 
@@ -24,11 +29,11 @@ public class AdminDTO {
     }
 
     public String getSurname() {
-        return surname;
+        return surName;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
+    public void setSurname(String surName) {
+        this.surName = surName;
     }
 
     public String getEmail() {

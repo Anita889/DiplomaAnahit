@@ -17,4 +17,7 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     List<Lesson> findAllByAcademyGroup(@Param("id") Long id);
 
     List<Lesson> findBySubject(Subject subject);
+
+    @Query(nativeQuery = true, value = "select student_group_id from lesson where type=:type")
+    List<Long> findByLessonName(@Param("type") String type);
 }

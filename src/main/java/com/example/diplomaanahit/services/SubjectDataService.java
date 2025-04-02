@@ -38,4 +38,7 @@ public class SubjectDataService {
         return repository.findById(subjectId).get();
     }
 
+    public Set<Subject> findAll() {
+        return repository.findAll().stream().collect(Collectors.toSet());
+    }
 }

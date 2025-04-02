@@ -8,7 +8,6 @@ import java.io.Serializable;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Component
 public class AuthDTO implements Serializable {
 
     private String email;

@@ -29,9 +29,19 @@ public class StudentDTO implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate studentBirthDate;
     private Double mog;
+    private Double score;
     private String studentCity;
     private Long academyGroupId;
     private String email;
+    private StudentGroupDTO studentGroupDTO;
+    private String password;
+    public StudentGroupDTO getStudentGroupDTO() {
+        return studentGroupDTO;
+    }
+
+    public void setStudentGroupDTO(StudentGroupDTO studentGroupDTO) {
+        this.studentGroupDTO = studentGroupDTO;
+    }
 
     public Long getId() {
         return id;
@@ -96,6 +106,22 @@ public class StudentDTO implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
     }
 }
 

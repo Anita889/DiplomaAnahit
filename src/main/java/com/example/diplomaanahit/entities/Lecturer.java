@@ -31,12 +31,7 @@ public class Lecturer {
     @Column(name = "rating")
     private Double rating;
 
-    @ManyToMany
-    @JoinTable(
-            name = "lecturer_lesson",
-            joinColumns = @JoinColumn(name = "lecturer_id"),
-            inverseJoinColumns = @JoinColumn(name = "lesson_id")
-    )
+    @OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Lesson> lessons;
 
     @ManyToOne

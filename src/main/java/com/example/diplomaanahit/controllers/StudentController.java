@@ -14,12 +14,13 @@ import com.example.diplomaanahit.entities.QuestionVariantsEntity;
 import com.example.diplomaanahit.entities.Student;
 import com.example.diplomaanahit.entities.Subject;
 import com.example.diplomaanahit.mapper.Mapper;
+import com.example.diplomaanahit.services.GradeDataService;
 import com.example.diplomaanahit.services.LessonDataService;
 import com.example.diplomaanahit.services.QuestionVariantsDataService;
+import com.example.diplomaanahit.services.StudentDataService;
 import com.example.diplomaanahit.services.SubjectDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +29,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 @RequestMapping(value = "api/user/{userId}/student/{studentId}")
 public class StudentController {
     @Autowired
-    private StudentTestCalculationService studentService;
+    private StudentTestCalculationService studentCalculationService;
 
     @Autowired
     private LessonDataService lessonService;
@@ -48,9 +49,15 @@ public class StudentController {
     @Autowired
     private SubjectDataService subjectDataService;
 
+    @Autowired
+    private StudentDataService studentService;
+
+    @Autowired
+    private GradeDataService gradeService;
+
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getStudent(@PathVariable Long userId, @PathVariable Long studentId) throws Exception {
-        Student student = studentService.findById(studentId);
+        Student student = studentCalculationService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -58,9 +65,20 @@ public class StudentController {
         return ResponseEntity.ok(studentDTO);
     }
 
+    @RequestMapping(value = "update", method = RequestMethod.PUT)
+    public ResponseEntity<?> update(@PathVariable Long userId, @PathVariable Long studentId, @RequestBody StudentDTO studentDTO) throws Exception {
+        Student student = studentCalculationService.findById(studentId);
+        if(student == null){
+            throw new Exception("Student with this id is not exist");
+        }
+        student.setStudentGroup(mapper.getStudentGroupDTOToEntity(studentDTO.getStudentGroupDTO()));
+        studentService.save(student);
+        return ResponseEntity.ok(studentDTO);
+    }
+
     @RequestMapping(value = "subjects", method = RequestMethod.GET)
     public ResponseEntity<?> getSubjects(@PathVariable Long userId, @PathVariable Long studentId) throws Exception {
-        Student student = studentService.findById(studentId);
+        Student student = studentCalculationService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -71,7 +89,7 @@ public class StudentController {
 
     @RequestMapping(value = "subjects/{subjectId}", method = RequestMethod.GET)
     public ResponseEntity<?> getLessonsOfSubject(@PathVariable Long userId, @PathVariable Long studentId, @PathVariable Long subjectId) throws Exception {
-        Student student = studentService.findById(studentId);
+        Student student = studentCalculationService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -86,7 +104,7 @@ public class StudentController {
 
     @RequestMapping(value = "lesson/{lessonId}", method = RequestMethod.GET)
     public ResponseEntity<?> getQuestionsAndVariants(@PathVariable Long userId, @PathVariable Long studentId, @PathVariable Long lessonId) throws Exception {
-        Student student = studentService.findById(studentId);
+        Student student = studentCalculationService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -101,7 +119,7 @@ public class StudentController {
 
     @RequestMapping(value = "lesson/{lessonId}", method = RequestMethod.POST)
     public ResponseEntity<?> submitAnswers(@PathVariable Long userId, @PathVariable Long studentId, @PathVariable Long lessonId,@RequestBody List<QuestionsAnswerDTO> questionsAnswerDTOS) throws Exception {
-        Student student = studentService.findById(studentId);
+        Student student = studentCalculationService.findById(studentId);
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
@@ -112,7 +130,8 @@ public class StudentController {
         if (lesson.getAvailableDate().isAfter(LocalDate.now())){
             throw new Exception("Lesson is not available yet");
         }
-        Grade grade = studentService.submitAnswers(student, lesson, questionsAnswerDTOS);
+        Grade grade = studentCalculationService.submitAnswers(student, lesson, questionsAnswerDTOS);
+        gradeService.save(grade);
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setDescription(grade.getAssessmentType().getName());
         gradeDTO.setGrade(grade.getScore() + "/" +questionsAnswerDTOS.size());

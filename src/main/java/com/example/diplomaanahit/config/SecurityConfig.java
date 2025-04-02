@@ -27,7 +27,6 @@ public class SecurityConfig {
     private final EntryPointUnauthorizedHandler unauthorizedHandler;
     private final CustomUserDetailsService userDetailsService;
     private final AuthenticationTokenService authenticationTokenService;
-    //private final UserSecurityService userSecurityService;
 
     @Value("${security.token.header}")
     private String tokenHeader;
@@ -73,9 +72,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/api/user/authentication/**",
-                                "api/students/**",
-                                "api/lecturers/**",
+                                "/api/user/**",
                                 "/api/user/health/**",
                                 "/api/test/**",
                                 // Swagger endpoints

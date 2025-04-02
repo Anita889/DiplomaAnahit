@@ -36,6 +36,7 @@ public class Mapper {
         dto.setName(entity.getName());
         dto.setSurName(entity.getSurName());
         dto.setEmail(entity.getEmail());
+        dto.setRating(entity.getRating());
         dto.setPassword(entity.getPassword());
         return dto;
     }
@@ -98,9 +99,10 @@ public class Mapper {
         return dto;
     }
 
-    public Set<SubjectDTO> getStudentEntitiesToDTOs(Set<Subject> subjects) {
+    public Set<SubjectDTO> getSubjectToDTOs(Set<Subject> subjects) {
         return subjects.stream().map(this::getLecturerEntityToDTO).collect(Collectors.toSet());
     }
+
 
     public SubjectDTO getLecturerEntityToDTO(Subject subject) {
         SubjectDTO subjectDTO = new SubjectDTO();
@@ -211,5 +213,22 @@ public class Mapper {
             dto.setCorrectAnswer(entity.getVariant3());
         }
         return dto;
+    }
+
+    public StudentDTO getStudentEntityToDTO(Student s) {
+        StudentDTO dto = new StudentDTO();
+        dto.setId(s.getId());
+        dto.setStudentName(s.getName());
+        dto.setStudentSurname(s.getSurname());
+        dto.setEmail(s.getEmail());
+        dto.setMog(s.getMog());
+        dto.setStudentBirthDate(s.getBirthdate());
+        dto.setAcademyGroupId(s.getStudentGroup().getId());
+        dto.setStudentGroupDTO(getStudentGroupEntityToDTO(s.getStudentGroup()));
+        return dto;
+    }
+
+    public List<StudentDTO> getStudentEntitiesToDTOs(Set<Student> students) {
+        return students.stream().map(this::getStudentEntityToDTO).collect(Collectors.toList());
     }
 }

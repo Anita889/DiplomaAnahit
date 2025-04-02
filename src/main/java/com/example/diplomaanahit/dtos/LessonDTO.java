@@ -1,14 +1,20 @@
 package com.example.diplomaanahit.dtos;
 
 import com.example.diplomaanahit.entities.Subject;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class LessonDTO {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class LessonDTO implements Serializable {
     private Long id;
     private String type;
 
+    private Boolean isAvailableDate;
+
     private LocalDate availableDate;
-    private Subject subject;
+    private SubjectDTO subject;
 
     public Long getId() {
         return id;
@@ -34,11 +40,18 @@ public class LessonDTO {
         this.availableDate = availableDate;
     }
 
-    public Subject getSubject() {
+    public Boolean getIsAvailableDate() {
+        return isAvailableDate;
+    }
+
+    public void setIsAvailableDate(Boolean isAvailableDate) {
+        this.isAvailableDate = isAvailableDate;
+    }
+    public SubjectDTO getSubject() {
         return subject;
     }
 
-    public void setSubject(Subject subject) {
+    public void setSubject(SubjectDTO subject) {
         this.subject = subject;
     }
 }

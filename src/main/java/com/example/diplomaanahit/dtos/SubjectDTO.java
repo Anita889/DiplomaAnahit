@@ -1,6 +1,13 @@
 package com.example.diplomaanahit.dtos;
 
-public class SubjectDTO {
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.io.Serializable;
+
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class SubjectDTO  implements Serializable {
     private Long id;
     private String name;
 
