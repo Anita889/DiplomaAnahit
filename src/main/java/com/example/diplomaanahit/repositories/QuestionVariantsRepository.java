@@ -14,4 +14,7 @@ public interface QuestionVariantsRepository extends JpaRepository<QuestionVarian
 
     @Query(nativeQuery = true, value = "SELECT * FROM question_variants_entity WHERE lesson_id = :lessonId")
     List<QuestionVariantsEntity> findQuestionVariantsListByLessonId(@Param("lessonId") Long lessonId);
+
+    @Query(nativeQuery = true, value = "SELECT * FROM question_variants_entity WHERE lesson_id IN (SELECT id FROM lesson WHERE type =:type)")
+    List<QuestionVariantsEntity> findQuestionVariantsListByLessonName(String type);
 }

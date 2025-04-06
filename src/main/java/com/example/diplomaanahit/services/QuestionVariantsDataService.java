@@ -60,4 +60,8 @@ public class QuestionVariantsDataService {
     public QuestionVariantsLecturerDTO toDTO(QuestionVariantsEntity questionVariantsEntity) {
         return mapper.getQuestionVariantsLecturerDTO(questionVariantsEntity);
     }
+
+    public List<QuestionVariantsEntity> findQuestionVariantsListByLessonName(String type) {
+        return repository.findQuestionVariantsListByLessonName(type);
+    }
 }

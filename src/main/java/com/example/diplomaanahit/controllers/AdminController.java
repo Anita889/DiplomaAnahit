@@ -41,6 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -158,7 +159,7 @@ public class AdminController {
             throw new Exception("Department with this id is not exist");
         }
         Lecturer lecturer = lecturerService.findById(lecturerId);
-        LecturerDTO lecturerDTO = mapper.getLecturerEntityToDTO(lecturer);
+        LecturerDTO lecturerDTO = mapper.getStudentEntityToDTO(lecturer);
         lecturerDTO.setLessons(lecturer.getLessons().stream().map(l -> {
             LessonDTO lessonDTO = new LessonDTO();
             lessonDTO.setId(l.getId());
@@ -559,7 +560,7 @@ public class AdminController {
         if (studentGroup == null) {
             throw new Exception("Student group with this id is not exist");
         }
-        Double d = studentTestCalculationService.calculateStudentGroup(studentGroup);
+        Map<String, List<StudentDTO>> d = studentTestCalculationService.analyzeStudentGroup(studentGroup);
         return ResponseEntity.ok(d);
     }
 
@@ -584,7 +585,9 @@ public class AdminController {
                 .flatMap(Set::stream)
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok(studentTestCalculationService.calculateDepartmentAndShow(list));
+        Map<String, Map<String,List<StudentDTO>>> d = studentTestCalculationService.analyzeStudentGroupsByDepartment(list);
+
+        return ResponseEntity.ok(d);
     }
 
 }

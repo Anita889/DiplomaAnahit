@@ -2,6 +2,7 @@ package com.example.diplomaanahit.services;
 
 
 import com.example.diplomaanahit.dtos.LessonDTO;
+import com.example.diplomaanahit.dtos.LessonSimpleDTO;
 import com.example.diplomaanahit.entities.Lesson;
 import com.example.diplomaanahit.entities.Subject;
 import com.example.diplomaanahit.repositories.LessonRepository;
@@ -10,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,8 +28,8 @@ public class LessonDataService {
 
 
 
-    public List<Lesson> findAllByStudentGroup(Subject subject) {
-       return repository.findAllByAcademyGroup(subject.getId());
+    public List<Lesson> findAllByStudentGroupAndSubject(Long studentGroupId, Subject subject) {
+       return repository.findAllByAcademyGroup(studentGroupId, subject.getId());
     }
 
     public List<LessonDTO> toDTOList(List<Lesson> list) {
@@ -55,5 +58,16 @@ public class LessonDataService {
 
     public List<Long> findByLessonName(String type) {
         return repository.findByLessonName(type);
+    }
+
+    public List<LessonSimpleDTO> toSimpleDTOList(List<Lesson> list) {
+        Map<String, LessonSimpleDTO> map = new HashMap<>();
+        for(Lesson entity : list){
+            LessonSimpleDTO dto = new LessonSimpleDTO();
+            dto.setId(entity.getId());
+            dto.setType(entity.getType());
+            map.put(entity.getType(), dto);
+        }
+        return map.values().stream().toList();
     }
 }

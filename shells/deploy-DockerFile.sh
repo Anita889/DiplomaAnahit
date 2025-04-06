@@ -2,7 +2,7 @@
 
 export GRADLE_OPTS="-Xmx64m -Dorg.gradle.jvmargs='-Xmx1g'"
 export DEFAULT_JVM_OPTS="-Xmx256m"
-
+export JAVA_OPTS="-Xmx256m -Djava.awt.headless=true"
 cd /DiplomaAnahit
 
 ./gradlew clean

@@ -3,6 +3,7 @@ package com.example.diplomaanahit.controllers;
 
 import com.example.diplomaanahit.dtos.LecturerDTO;
 import com.example.diplomaanahit.dtos.LessonDTO;
+import com.example.diplomaanahit.dtos.LessonSimpleDTO;
 import com.example.diplomaanahit.dtos.QuestionVariantsLecturerDTO;
 import com.example.diplomaanahit.dtos.StudentDTO;
 import com.example.diplomaanahit.dtos.StudentGroupDTO;
@@ -68,7 +69,7 @@ public class LecturerController {
         if(lecturer == null){
             throw new Exception("Student with this id is not exist");
         }
-        LecturerDTO lecturerDTO = mapper.getLecturerEntityToDTO(lecturer);
+        LecturerDTO lecturerDTO = mapper.getStudentEntityToDTO(lecturer);
         return ResponseEntity.ok(lecturerDTO);
     }
 
@@ -96,7 +97,7 @@ public class LecturerController {
             throw new Exception("Subject with this id is not exist");
         }
         List<Lesson> list = lessonService.findBySubject(subject);
-        List<LessonDTO> lessonDTOList = lessonService.toDTOList(list);
+        List<LessonSimpleDTO> lessonDTOList = lessonService.toSimpleDTOList(list);
         return ResponseEntity.ok(lessonDTOList);
     }
 
@@ -126,7 +127,7 @@ public class LecturerController {
         if(lesson == null){
             throw new Exception("Lesson with this id is not exist");
         }
-        List<QuestionVariantsEntity> list = questionVariantsService.findQuestionVariantsListByLessonId(lessonId);
+        List<QuestionVariantsEntity> list = questionVariantsService.findQuestionVariantsListByLessonName(lesson.getType());
         List<QuestionVariantsLecturerDTO> dtoList = questionVariantsService.toQuestionVariantsLecturerDTOList(list);
         return ResponseEntity.ok(dtoList);
     }
@@ -142,6 +143,7 @@ public class LecturerController {
         if(lesson == null){
             throw new Exception("Lesson with this id is not exist");
         }
+        String lessonName = lesson.getType();
         List<Long> studentGroupIds = lessonService.findByLessonName(lesson.getType());
         List<StudentGroup> studentGroups = studentGroupDataService.findByIds(studentGroupIds);
         Map<String, List<StudentDTO>> dtoMap = new HashMap<>();
@@ -149,10 +151,13 @@ public class LecturerController {
             StudentGroupDTO studentGroupDTO = mapper.getStudentGroupEntityToDTO(s);
             List<StudentDTO> studentDTOS = mapper.getStudentEntitiesToDTOs(s.getStudents());
             for(Student student : s.getStudents()){
-                Set<Grade> grades = student.getGrades().stream().filter(grade -> grade.getLesson().getId().equals(lessonId)).collect(Collectors.toSet());
+                Set<Grade> grades = student.getGrades().stream().filter(grade -> grade.getLesson().getType().contains(lessonName)).collect(Collectors.toSet());
                 Double score = grades.stream().mapToDouble(Grade::getScore).sum();
+                Double maxScore = grades.stream().mapToDouble(Grade::getMaxScore).sum();
                 StudentDTO studentDTO = studentDTOS.stream().filter(studentDTO1 -> studentDTO1.getId().equals(student.getId())).findFirst().get();
-                studentDTO.setScore(score);
+                if (!grades.isEmpty()) {
+                    studentDTO.setScore(score/maxScore);
+                }
             }
             dtoMap.put(studentGroupDTO.getName(), studentDTOS);
         }

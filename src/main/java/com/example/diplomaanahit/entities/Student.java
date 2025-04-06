@@ -32,6 +32,9 @@ public class Student {
     @Column(name = "MOG")
     private Double mog;
 
+    @Column(name = "city")
+    private String city;
+
     @ManyToOne
     @JoinColumn(name = "student_group_id")
     private StudentGroup studentGroup;
@@ -121,5 +124,13 @@ public class Student {
 
     public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

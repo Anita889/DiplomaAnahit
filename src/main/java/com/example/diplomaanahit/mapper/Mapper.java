@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class Mapper {
-    public LecturerDTO getLecturerEntityToDTO(Lecturer entity) {
+    public LecturerDTO getStudentEntityToDTO(Lecturer entity) {
         LecturerDTO dto = new LecturerDTO();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
@@ -89,22 +89,12 @@ public class Mapper {
         return entity;
     }
 
-    public StudentDTO getLecturerEntityToDTO(Student entity){
-        StudentDTO dto = new StudentDTO();
-        dto.setId(entity.getId());
-        dto.setStudentName(entity.getName());
-        dto.setEmail(entity.getEmail());
-        dto.setStudentSurname(entity.getSurname());
-        dto.setAcademyGroupId(entity.getStudentGroup().getId());
-        return dto;
-    }
-
     public Set<SubjectDTO> getSubjectToDTOs(Set<Subject> subjects) {
-        return subjects.stream().map(this::getLecturerEntityToDTO).collect(Collectors.toSet());
+        return subjects.stream().map(this::getStudentEntityToDTO).collect(Collectors.toSet());
     }
 
 
-    public SubjectDTO getLecturerEntityToDTO(Subject subject) {
+    public SubjectDTO getStudentEntityToDTO(Subject subject) {
         SubjectDTO subjectDTO = new SubjectDTO();
         subjectDTO.setId(subject.getId());
         subjectDTO.setName(subject.getName());
@@ -144,7 +134,7 @@ public class Mapper {
     }
 
     public List<LecturerDTO> getLecturerEntitiesToDTOs(List<Lecturer> lecturers) {
-        return lecturers.stream().map(this::getLecturerEntityToDTO).collect(Collectors.toList());
+        return lecturers.stream().map(this::getStudentEntityToDTO).collect(Collectors.toList());
     }
 
     public Set<StudentGroupDTO> getStudentGroupEntitiesToDTOs(Set<StudentGroup> studentGroups) {
@@ -217,6 +207,7 @@ public class Mapper {
 
     public StudentDTO getStudentEntityToDTO(Student s) {
         StudentDTO dto = new StudentDTO();
+        dto.setStudentCity(s.getCity());
         dto.setId(s.getId());
         dto.setStudentName(s.getName());
         dto.setStudentSurname(s.getSurname());

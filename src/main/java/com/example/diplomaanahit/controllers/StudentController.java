@@ -61,7 +61,7 @@ public class StudentController {
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
-        StudentDTO studentDTO = mapper.getLecturerEntityToDTO(student);
+        StudentDTO studentDTO = mapper.getStudentEntityToDTO(student);
         return ResponseEntity.ok(studentDTO);
     }
 
@@ -97,7 +97,7 @@ public class StudentController {
         if(subject == null){
             throw new Exception("Subject with this id is not exist");
         }
-        List<Lesson> list = lessonService.findAllByStudentGroup(subject);
+        List<Lesson> list = lessonService.findAllByStudentGroupAndSubject(student.getStudentGroup().getId(), subject);
         List<LessonDTO> lessonDTOList = lessonService.toDTOList(list);
         return ResponseEntity.ok(lessonDTOList);
     }
