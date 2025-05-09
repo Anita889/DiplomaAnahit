@@ -136,7 +136,9 @@ public class StudentTestCalculationService {
                 studentDTO.setScore(calculateStudentMiddleScore(s, l));
                 studentDTOS.add(studentDTO);
             }
-            map.put(l.getType() , studentDTOS);
+            if(studentDTOS.stream().anyMatch(s -> s.getScore() != null && s.getScore() != 0.0)) {
+                map.put("LessonName: " + l.getType() + " Lecturer: " + l.getLecturer().getName() + " " + l.getLecturer().getSurName() , studentDTOS);
+            }
         }
         return map;
     }

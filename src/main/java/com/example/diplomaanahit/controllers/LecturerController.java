@@ -156,10 +156,12 @@ public class LecturerController {
                 Double maxScore = grades.stream().mapToDouble(Grade::getMaxScore).sum();
                 StudentDTO studentDTO = studentDTOS.stream().filter(studentDTO1 -> studentDTO1.getId().equals(student.getId())).findFirst().get();
                 if (!grades.isEmpty()) {
-                    studentDTO.setScore(score/maxScore);
+                    studentDTO.setScore(score/maxScore * 100);
                 }
             }
-            dtoMap.put(studentGroupDTO.getName(), studentDTOS);
+            if(studentDTOS.stream().anyMatch(studentDTO -> studentDTO.getScore() != null)){
+                dtoMap.put(studentGroupDTO.getName(), studentDTOS);
+            }
         }
         return ResponseEntity.ok(dtoMap);
     }

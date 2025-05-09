@@ -35,6 +35,8 @@ public class StudentDTO implements Serializable {
     private String email;
     private StudentGroupDTO studentGroupDTO;
     private String password;
+    private String lecturerInfo;
+
     public StudentGroupDTO getStudentGroupDTO() {
         return studentGroupDTO;
     }
@@ -122,6 +124,14 @@ public class StudentDTO implements Serializable {
 
     public void setScore(Double score) {
         this.score = score;
+    }
+
+    public void setLecturerInfo(String lecturerInfo) {
+        this.lecturerInfo = lecturerInfo;
+    }
+
+    public String getLecturerInfo() {
+        return lecturerInfo;
     }
 }
 
