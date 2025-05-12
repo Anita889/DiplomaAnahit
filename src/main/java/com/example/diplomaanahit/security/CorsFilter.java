@@ -11,11 +11,11 @@ public class CorsFilter implements Filter {
 
     private final String tokenHeader;
 
-    private final String refreshTokenHeader;
 
-    public CorsFilter(String tokenHeader, String refreshTokenHeader){
+
+    public CorsFilter(String tokenHeader){
         this.tokenHeader = tokenHeader;
-        this.refreshTokenHeader = refreshTokenHeader;
+
     }
 
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {

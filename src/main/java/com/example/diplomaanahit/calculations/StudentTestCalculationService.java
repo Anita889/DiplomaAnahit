@@ -38,7 +38,7 @@ public class StudentTestCalculationService {
     @Autowired
     private AssessmentDataService assessmentService;
 
-    public Grade submitAnswers(Student student, Lesson lesson, List<QuestionsAnswerDTO> questionsAnswerDTOS) {
+    public Grade submitAnswers(Student student, Lesson lesson, List<QuestionsAnswerDTO> questionsAnswerDTOS, Boolean isSatisfied) {
         List<QuestionVariantsEntity> questionVariantsEntities = questionVariantsService.findQuestionVariantsListByLessonId(lesson.getId());
         Integer correctAnswers = 0;
         Integer total = 0;
@@ -67,10 +67,11 @@ public class StudentTestCalculationService {
         } else {
             student.getGrades().add(grade);
         }
+        grade.setSatisfied(isSatisfied);
         return grade;
     }
 
-    private AssessmentType getAssessmentType(Integer correctAnswers, Integer total) {
+    public AssessmentType getAssessmentType(Integer correctAnswers, Integer total) {
         AssessmentType assessmentType;
         if (correctAnswers < 0.4 * total) {
             assessmentType = assessmentService.findByAssessmentType("INSUFFICIENT");

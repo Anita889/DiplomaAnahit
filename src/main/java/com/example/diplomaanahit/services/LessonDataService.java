@@ -3,8 +3,7 @@ package com.example.diplomaanahit.services;
 
 import com.example.diplomaanahit.dtos.LessonDTO;
 import com.example.diplomaanahit.dtos.LessonSimpleDTO;
-import com.example.diplomaanahit.entities.Lesson;
-import com.example.diplomaanahit.entities.Subject;
+import com.example.diplomaanahit.entities.*;
 import com.example.diplomaanahit.repositories.LessonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,5 +68,18 @@ public class LessonDataService {
             map.put(entity.getType(), dto);
         }
         return map.values().stream().toList();
+    }
+
+    public List<Lesson> findBySubjectAndLecturer(Subject subject, Lecturer lecturer) {
+        return repository.findBySubjectAndLecturer(subject.getId(), lecturer.getId());
+    }
+
+    public List<Lesson> findAllByStudentGroups(List<StudentGroup> studentGroups) {
+        List<Lesson> lessons = new ArrayList<>();
+        for (StudentGroup studentGroup : studentGroups) {
+            List<Lesson> groupLessons = repository.findAllByAcademyGroup(studentGroup.getId(), null);
+            lessons.addAll(groupLessons);
+        }
+        return lessons;
     }
 }

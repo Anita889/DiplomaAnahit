@@ -5,6 +5,7 @@ import com.example.diplomaanahit.security.AuthenticationTokenService;
 import com.example.diplomaanahit.security.CorsFilter;
 import com.example.diplomaanahit.security.CustomUserDetailsService;
 import com.example.diplomaanahit.security.EntryPointUnauthorizedHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,15 +25,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
     private final EntryPointUnauthorizedHandler unauthorizedHandler;
+    @Autowired
     private final CustomUserDetailsService userDetailsService;
+    @Autowired
     private final AuthenticationTokenService authenticationTokenService;
 
     @Value("${security.token.header}")
     private String tokenHeader;
 
-    @Value("${security.refreshtoken.header}")
-    private String refreshTokenHeader;
 
     public SecurityConfig(EntryPointUnauthorizedHandler unauthorizedHandler,
                           CustomUserDetailsService userDetailsService,
@@ -63,7 +65,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthTokenFilter authenticationTokenFilter = new AuthTokenFilter(authenticationTokenService);
-        CorsFilter corsFilter = new CorsFilter(tokenHeader, refreshTokenHeader);
+        CorsFilter corsFilter = new CorsFilter(tokenHeader);
 
         http
                 .csrf(csrf -> csrf.disable())
@@ -72,10 +74,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/api/user/**",
-                                "/api/user/health/**",
-                                "/api/test/**",
-                                // Swagger endpoints
+                                "/api/**",      // ✅ Allow login
+//                                "/api/user/*",     // ✅ Allow signup
+                                // Swagger endpoints (optional)
                                 "/v3/api-docs",
                                 "/v3/api-docs/**",
                                 "/swagger-resources/**",
@@ -83,11 +84,12 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/webjars/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // ✅ All other endpoints must be authenticated
                 )
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 }

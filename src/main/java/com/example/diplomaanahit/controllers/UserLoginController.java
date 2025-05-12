@@ -27,6 +27,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/user/authentication")
+
 public class UserLoginController {
 
     @Autowired
@@ -53,6 +54,8 @@ public class UserLoginController {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private AuthenticationTokenService authenticationTokenService;
 
     @PostMapping("login")
     public ResponseEntity<?> login(@RequestBody AuthDTO authDTO) throws Exception {
@@ -68,29 +71,13 @@ public class UserLoginController {
             throw new Exception("Email or password was entered incorrectly, please try again");
         }
 
-        AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
+        AuthDTO auth = authenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
         String token = auth.getAccessToken();
         return ResponseEntity.ok(Map.of(
                 "accessToken", token,
                 "user", auth.getUser(),
                 "role", auth.getUser().getRegistrationType()
         ));
-    }
-
-    @GetMapping("password/change")
-    public ResponseEntity<?> passwordChange(@RequestParam String email) throws Exception {
-        UserEntity userEntity = userDataService.findByEmail(email);
-        if (userEntity == null) {
-            throw new Exception("User with that email address does not exist");
-        }
-
-        String key = UUID.randomUUID().toString();
-        userEntity.setPassword(key); // Typically you'd set a token here, not overwrite password directly
-        userDataService.save(userEntity);
-
-        sendEmail(email, "Password Reset Key", "Use this key to reset your password: " + key);
-
-        return ResponseEntity.ok(true);
     }
 
     @PostMapping("signup")
@@ -117,7 +104,7 @@ public class UserLoginController {
 
         sendEmail(authDTO.getEmail(), "Welcome to our platform", "Your account has been created successfully.");
 
-        AuthDTO auth = AuthenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
+        AuthDTO auth = authenticationTokenService.login(userEntity, userMapper, accessTokenSecret);
         UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
 
         return ResponseEntity.ok(Map.of(

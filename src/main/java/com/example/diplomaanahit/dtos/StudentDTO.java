@@ -30,12 +30,15 @@ public class StudentDTO implements Serializable {
     private LocalDate studentBirthDate;
     private Double mog;
     private Double score;
+    private Integer point;
     private String studentCity;
     private Long academyGroupId;
     private String email;
     private StudentGroupDTO studentGroupDTO;
     private String password;
     private String lecturerInfo;
+
+    boolean isPresent;
 
     public StudentGroupDTO getStudentGroupDTO() {
         return studentGroupDTO;
@@ -132,6 +135,22 @@ public class StudentDTO implements Serializable {
 
     public String getLecturerInfo() {
         return lecturerInfo;
+    }
+
+    public Integer getPoint() {
+        return point;
+    }
+
+    public void setPoint(Integer point) {
+        this.point = point;
+    }
+
+    public boolean isPresent() {
+        return isPresent;
+    }
+
+    public void setPresent(boolean present) {
+        isPresent = present;
     }
 }
 

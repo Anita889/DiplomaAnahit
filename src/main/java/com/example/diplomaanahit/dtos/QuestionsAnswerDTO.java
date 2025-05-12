@@ -15,6 +15,8 @@ public class QuestionsAnswerDTO {
 
     private Boolean thirdVariant;
 
+    private Boolean isSatisfied;
+
     public Long getId() {
         return id;
     }
@@ -53,5 +55,12 @@ public class QuestionsAnswerDTO {
 
     public void setThirdVariant(Boolean thirdVariant) {
         this.thirdVariant = thirdVariant;
+    }
+
+    public Boolean getIsSatisfied() {
+        return isSatisfied;
+    }
+    public void setIsSatisfied(Boolean isSatisfied) {
+        this.isSatisfied = isSatisfied;
     }
 }

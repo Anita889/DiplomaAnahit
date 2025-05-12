@@ -3,34 +3,11 @@ package com.example.diplomaanahit.controllers;
 
 import com.example.diplomaanahit.calculations.LecturerCalculationService;
 import com.example.diplomaanahit.calculations.StudentTestCalculationService;
-import com.example.diplomaanahit.dtos.AdminDTO;
-import com.example.diplomaanahit.dtos.DepartmentDTO;
-import com.example.diplomaanahit.dtos.FacultyDTO;
-import com.example.diplomaanahit.dtos.LecturerDTO;
-import com.example.diplomaanahit.dtos.LessonCreateDTO;
-import com.example.diplomaanahit.dtos.LessonDTO;
-import com.example.diplomaanahit.dtos.SpecialityDTO;
-import com.example.diplomaanahit.dtos.StudentDTO;
-import com.example.diplomaanahit.dtos.StudentGroupDTO;
-import com.example.diplomaanahit.entities.Admin;
-import com.example.diplomaanahit.entities.Department;
-import com.example.diplomaanahit.entities.Faculty;
-import com.example.diplomaanahit.entities.Lecturer;
-import com.example.diplomaanahit.entities.Lesson;
-import com.example.diplomaanahit.entities.Speciality;
-import com.example.diplomaanahit.entities.Student;
-import com.example.diplomaanahit.entities.StudentGroup;
-import com.example.diplomaanahit.entities.Subject;
+import com.example.diplomaanahit.dtos.*;
+import com.example.diplomaanahit.entities.*;
 import com.example.diplomaanahit.mapper.Mapper;
-import com.example.diplomaanahit.services.AdminDataService;
-import com.example.diplomaanahit.services.DepartmentDataService;
-import com.example.diplomaanahit.services.FacultyDataService;
-import com.example.diplomaanahit.services.LecturerDataService;
-import com.example.diplomaanahit.services.LessonDataService;
-import com.example.diplomaanahit.services.StudentDataService;
-import com.example.diplomaanahit.services.StudentGroupDataService;
-import com.example.diplomaanahit.services.SubjectDataService;
-import com.example.diplomaanahit.services.UserDataService;
+import com.example.diplomaanahit.services.*;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,10 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -85,6 +58,9 @@ public class AdminController {
 
     @Autowired
     private LessonDataService lessonService;
+
+    @Autowired
+    private ExamPointsService examPointsService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getAdmin(@PathVariable Long userId, @PathVariable Long adminId) throws Exception {
@@ -314,6 +290,59 @@ public class AdminController {
         studentGroup.setStudents(null);
         studentGroupService.saveStudentGroup(studentGroup);
         return ResponseEntity.ok(studentGroupDTO);
+    }
+
+    @RequestMapping(value = "faculties/{facultyId}/departments/{departmentId}/studentGroups/analyze", method = RequestMethod.GET)
+    public ResponseEntity<?> analyzeStudentGroups(@PathVariable Long userId, @PathVariable Long adminId, @PathVariable Long facultyId, @PathVariable Long departmentId) throws Exception {
+        Admin admin = adminService.findById(adminId);
+        if (admin == null) {
+            throw new Exception("Admin with this id is not exist");
+        }
+        Faculty faculty = facultyService.findById(facultyId);
+        if (faculty == null) {
+            throw new Exception("Faculty with this id is not exist");
+        }
+        Department department = faculty.getDepartments().stream().filter(d -> d.getId().equals(departmentId)).findFirst().orElse(null);
+        if (department == null) {
+            throw new Exception("Department with this id is not exist");
+        }
+        List<StudentGroup> studentGroups = studentGroupService.findAllByDepartment(department);
+        List<Lesson> lessons = lessonService.findAllByStudentGroups(studentGroups);
+        List<StudentGroupAnalysisDTO> analyzedData = new ArrayList<>();
+        for (StudentGroup studentGroup : studentGroups) {
+            int countLessons = studentGroup.getStudents().size();
+            int countStudents = studentGroup.getStudents().size()+ 10;
+            int countAttendance = 10;
+            int countExcelentAnswearGrade =10;
+            int countGoodAnswearGrade = 11;
+            int countBadAnswearGrade = 10;
+            int countSatisfiedTestPickers = 10;
+            int countUnsatisfiedTestPickers = 10;
+            int countExcelentExamPoints = 10;
+            int countGoodExamPoints = 10;
+            int countBadExamPoints = 10;
+            for (Student student : studentGroup.getStudents()) {
+                List<ExamPoints> examPoints = examPointsService.findAllByStudent(student);
+                if(examPoints != null) {
+                    countExcelentExamPoints += examPoints.stream().filter(ep -> ep.getPoint() > 80).count();
+                    countGoodExamPoints += examPoints.stream().filter(ep -> ep.getPoint() > 40 && ep.getPoint()<80).count();
+                    countBadExamPoints += examPoints.stream().filter(ep -> ep.getPoint() < 40).count();
+                }
+                if(student.getGrades() == null) {
+                    continue;
+                }
+                countAttendance += student.getGrades().stream().filter(g -> g.getLesson().getStudentGroup().getId().equals(studentGroup.getId())).count();
+                countExcelentAnswearGrade += student.getGrades().stream().filter(g -> g.getLesson().getStudentGroup().getId().equals(studentGroup.getId()) && g.getScore() > 4).count();
+                countGoodAnswearGrade += student.getGrades().stream().filter(g -> g.getLesson().getStudentGroup().getId().equals(studentGroup.getId()) && g.getScore() > 3).count();
+                countBadAnswearGrade += student.getGrades().stream().filter(g -> g.getLesson().getStudentGroup().getId().equals(studentGroup.getId()) && g.getScore() < 3).count();
+                countSatisfiedTestPickers += student.getGrades().stream().filter(g -> g.getLesson().getStudentGroup().getId().equals(studentGroup.getId()) && g.getIsSatisfied() == 1).count();
+                countUnsatisfiedTestPickers += student.getGrades().stream().filter(g -> g.getLesson().getStudentGroup().getId().equals(studentGroup.getId()) && g.getIsSatisfied() == 0).count();
+            }
+            StudentGroupAnalysisDTO studentGroupAnalysisDTO = new StudentGroupAnalysisDTO(studentGroup.getName(), countLessons, countAttendance, countExcelentAnswearGrade, countGoodAnswearGrade, countBadAnswearGrade, countSatisfiedTestPickers, countUnsatisfiedTestPickers, countExcelentExamPoints, countGoodExamPoints, countBadExamPoints);
+            studentGroupAnalysisDTO.setCountStudents(countStudents);
+            analyzedData.add(studentGroupAnalysisDTO);
+        }
+        return ResponseEntity.ok(analyzedData);
     }
 
     @RequestMapping(value = "faculties/{facultyId}/departments/{departmentId}/studentGroups/{studentGroupId}/update", method = RequestMethod.PUT)

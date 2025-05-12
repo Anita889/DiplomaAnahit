@@ -8,19 +8,12 @@ import com.example.diplomaanahit.dtos.QuestionVariantsStudentDTO;
 import com.example.diplomaanahit.dtos.QuestionsAnswerDTO;
 import com.example.diplomaanahit.dtos.StudentDTO;
 import com.example.diplomaanahit.dtos.SubjectDTO;
-import com.example.diplomaanahit.entities.Grade;
-import com.example.diplomaanahit.entities.Lesson;
-import com.example.diplomaanahit.entities.QuestionVariantsEntity;
-import com.example.diplomaanahit.entities.Student;
-import com.example.diplomaanahit.entities.Subject;
+import com.example.diplomaanahit.entities.*;
 import com.example.diplomaanahit.mapper.Mapper;
-import com.example.diplomaanahit.services.GradeDataService;
-import com.example.diplomaanahit.services.LessonDataService;
-import com.example.diplomaanahit.services.QuestionVariantsDataService;
-import com.example.diplomaanahit.services.StudentDataService;
-import com.example.diplomaanahit.services.SubjectDataService;
+import com.example.diplomaanahit.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +35,9 @@ public class StudentController {
 
     @Autowired
     private QuestionVariantsDataService questionVariantsService;
+
+    @Autowired
+    private UserDataService userDataService;
 
     @Autowired
     private Mapper mapper;
@@ -68,10 +64,23 @@ public class StudentController {
     @RequestMapping(value = "update", method = RequestMethod.PUT)
     public ResponseEntity<?> update(@PathVariable Long userId, @PathVariable Long studentId, @RequestBody StudentDTO studentDTO) throws Exception {
         Student student = studentCalculationService.findById(studentId);
+        UserEntity user = userDataService.findById(userId);
+        if (user == null) {
+            throw new Exception("User with this id is not exist");
+        }
         if(student == null){
             throw new Exception("Student with this id is not exist");
         }
-        student.setStudentGroup(mapper.getStudentGroupDTOToEntity(studentDTO.getStudentGroupDTO()));
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if(!user.getEmail().equals(studentDTO.getEmail())){
+            student.setEmail(studentDTO.getEmail());
+            user.setEmail(studentDTO.getEmail());
+        }
+        if(!user.getEmail().equals(encoder.encode(studentDTO.getPassword()))){
+            student.setPassword(encoder.encode(studentDTO.getPassword()));
+            user.setPassword(encoder.encode(studentDTO.getPassword()));
+        }
+        userDataService.save(user);
         studentService.save(student);
         return ResponseEntity.ok(studentDTO);
     }
@@ -130,7 +139,7 @@ public class StudentController {
         if (lesson.getAvailableDate().isAfter(LocalDate.now())){
             throw new Exception("Lesson is not available yet");
         }
-        Grade grade = studentCalculationService.submitAnswers(student, lesson, questionsAnswerDTOS);
+        Grade grade = studentCalculationService.submitAnswers(student, lesson, questionsAnswerDTOS, questionsAnswerDTOS.get(0).getIsSatisfied());
         gradeService.save(grade);
         GradeDTO gradeDTO = new GradeDTO();
         gradeDTO.setDescription(grade.getAssessmentType().getName());

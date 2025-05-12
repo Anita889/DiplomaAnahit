@@ -1,8 +1,7 @@
 package com.example.diplomaanahit.services;
 
 
-import com.example.diplomaanahit.entities.Lesson;
-import com.example.diplomaanahit.entities.StudentGroup;
+import com.example.diplomaanahit.entities.*;
 import com.example.diplomaanahit.repositories.StudentGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,5 +27,9 @@ public class StudentGroupDataService {
 
     public List<StudentGroup> findByIds(List<Long> studentGroupIds) {
         return studentGroupRepository.findAllById(studentGroupIds);
+    }
+
+    public List<StudentGroup> findAllByDepartment(Department department) {
+        return studentGroupRepository.findAllByDepartment(department.getId());
     }
 }

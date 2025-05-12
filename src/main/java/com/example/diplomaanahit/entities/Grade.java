@@ -1,14 +1,9 @@
 package com.example.diplomaanahit.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +27,9 @@ public class Grade {
     @ManyToOne
     @JoinColumn(name = "assessment_type_id")
     private AssessmentType assessmentType;
+
+    @Column(name = "isSatisfiedByStudent")
+    private Integer isSatisfied;
 
     // Getters and Setters
     public Long getId() {
@@ -80,5 +78,13 @@ public class Grade {
 
     public void setLesson(Lesson lesson) {
         this.lesson = lesson;
+    }
+
+    public void setSatisfied(Boolean isSatisfied) {
+        this.isSatisfied = isSatisfied ? 1 : 0;
+    }
+
+    public Integer getIsSatisfied() {
+        return isSatisfied;
     }
 }

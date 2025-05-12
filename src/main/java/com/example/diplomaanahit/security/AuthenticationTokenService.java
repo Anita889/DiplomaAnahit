@@ -46,7 +46,7 @@ public class AuthenticationTokenService {
         } else {
             role = UserType.USER;
         }
-        String accessToken = TokenUtils.generateToken(userDetails, role, accessTokenSecret, 3600L);
+        String accessToken = TokenUtils.generateToken(userDetails, role, accessTokenSecret, 3600);
         UserDTO userDTO = userMapper.userDTOFromUserEntity(userEntity);
         userDTO.setUserId(userDTO.getId());
         userDTO.setId(id);
