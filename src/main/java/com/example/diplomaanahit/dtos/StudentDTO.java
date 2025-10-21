@@ -40,6 +40,14 @@ public class StudentDTO implements Serializable {
 
     boolean isPresent;
 
+    public boolean isPresent() {
+        return isPresent;
+    }
+
+    public void setPresent(boolean present) {
+        isPresent = present;
+    }
+
     public StudentGroupDTO getStudentGroupDTO() {
         return studentGroupDTO;
     }
@@ -145,12 +153,5 @@ public class StudentDTO implements Serializable {
         this.point = point;
     }
 
-    public boolean isPresent() {
-        return isPresent;
-    }
-
-    public void setPresent(boolean present) {
-        isPresent = present;
-    }
 }
 

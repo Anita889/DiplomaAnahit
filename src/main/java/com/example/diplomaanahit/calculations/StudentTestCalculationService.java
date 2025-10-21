@@ -1,19 +1,8 @@
 package com.example.diplomaanahit.calculations;
 
-import com.example.diplomaanahit.dtos.QuestionsAnswerDTO;
-import com.example.diplomaanahit.dtos.StudentDTO;
-import com.example.diplomaanahit.dtos.StudentGroupDTO;
-import com.example.diplomaanahit.entities.AssessmentType;
-import com.example.diplomaanahit.entities.Attendance;
-import com.example.diplomaanahit.entities.Department;
-import com.example.diplomaanahit.entities.Grade;
-import com.example.diplomaanahit.entities.Lesson;
-import com.example.diplomaanahit.entities.QuestionVariantsEntity;
-import com.example.diplomaanahit.entities.Student;
-import com.example.diplomaanahit.entities.StudentGroup;
-import com.example.diplomaanahit.services.AssessmentDataService;
-import com.example.diplomaanahit.services.QuestionVariantsDataService;
-import com.example.diplomaanahit.services.StudentDataService;
+import com.example.diplomaanahit.dtos.*;
+import com.example.diplomaanahit.entities.*;
+import com.example.diplomaanahit.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +26,12 @@ public class StudentTestCalculationService {
 
     @Autowired
     private AssessmentDataService assessmentService;
+
+    @Autowired
+    private ExamPointsService examPointsService;
+
+    @Autowired
+    private LessonDataService lessonService;
 
     public Grade submitAnswers(Student student, Lesson lesson, List<QuestionsAnswerDTO> questionsAnswerDTOS, Boolean isSatisfied) {
         List<QuestionVariantsEntity> questionVariantsEntities = questionVariantsService.findQuestionVariantsListByLessonId(lesson.getId());
@@ -89,41 +84,8 @@ public class StudentTestCalculationService {
         return studentService.findById(studentId);
     }
 
-    public Double calculateStudentGroup(StudentGroup studentGroup) {
-        Double factor = 0.0;
-        for (Student student : studentGroup.getStudents()) {
-            Set<Attendance> attendances = student.getAttendances();
-            attendances.stream().filter(Attendance::getIsPresent).collect(Collectors.toSet());
-            Set<Grade> grades = student.getGrades();
-            for (Attendance a : attendances) {
-                grades.stream().filter(g -> g.getLesson().getId().equals(a.getLesson().getId()));
-            }
 
-            for (Grade g : grades) {
-                factor += (double) g.getScore() / g.getMaxScore();
-            }
-//            factor += totalScoreFactor * presentFactor;
-        }
-        return factor / studentGroup.getStudents().size();
-    }
-
-    public Double calculateDepartment(List<StudentGroup> studentGroups) {
-        Double factor = 0.0;
-        for (StudentGroup s : studentGroups) {
-            factor += calculateStudentGroup(s);
-        }
-        return factor / studentGroups.size();
-    }
-
-    public Map<String, Double> calculateDepartmentAndShow(List<StudentGroup> studentGroups) {
-        Map<String, Double> f = new HashMap<>();
-        for (StudentGroup s : studentGroups) {
-            f.put(s.getName(), calculateStudentGroup(s));
-        }
-        return f;
-    }
-
-    public Map<String, List<StudentDTO>> analyzeStudentGroup(StudentGroup studentGroup) {
+    public Map<String, List<StudentDTO>> analyzeStudentGroupByMOG(StudentGroup studentGroup) {
         Map<String, List<StudentDTO>> map = new HashMap<>();
         Set<Student> students = studentGroup.getStudents();
         for (Lesson l : studentGroup.getLessons()) {
@@ -158,11 +120,239 @@ public class StudentTestCalculationService {
         return 100 * factor / grades.size();
     }
 
-    public Map<String, Map<String, List<StudentDTO>>> analyzeStudentGroupsByDepartment(List<StudentGroup> list) {
+    public Map<String, Map<String, List<StudentDTO>>> analyzeStudentGroupsByDepartmentByMOG(List<StudentGroup> list) {
         Map<String, Map<String, List<StudentDTO>>> map = new HashMap<>();
         for (StudentGroup s : list) {
-            map.put(s.getName(), analyzeStudentGroup(s));
+            map.put(s.getName(), analyzeStudentGroupByMOG(s));
         }
         return map;
     }
+
+    public List<StudentGroupsAnalysisDTO> analyzeStudentGroups(List<StudentGroup> studentGroups, Lecturer lecturer, Subject subject, Lesson lesson) {
+        if (subject != null){
+            return analyzeStudentGroupsBySubject(studentGroups, lecturer,  subject);
+        }
+        else if (lesson != null){
+            return analyzeStudentGroupsByLesson(studentGroups, lecturer, lesson.getType());
+        }
+        else {
+            return analyzeStudentGroupsAll(studentGroups);
+        }
+
+    }
+
+    private List<StudentGroupsAnalysisDTO> analyzeStudentGroupsAll(List<StudentGroup> studentGroups) {
+        List<StudentGroupsAnalysisDTO> result = new ArrayList<>();
+        for (StudentGroup studentGroup : studentGroups) {
+            int countAttendance = 0;
+            int countExcelentAnswearGrade = 0;
+            int countGoodAnswearGrade = 0;
+            int countSufficientAnswearGrade = 0;
+            int countBadAnswearGrade = 0;
+            int countSatisfiedTestPickers = 0;
+            int countUnsatisfiedTestPickers = 0;
+
+            for (Student student : studentGroup.getStudents()) {
+                Set<Attendance> attendances = student.getAttendances();
+                countAttendance += attendances.size();
+                Set<Grade> grades = student.getGrades();
+                for (Grade grade : grades) {
+                    if ((double) grade.getScore() / grade.getMaxScore() >= 0.8) {
+                        countExcelentAnswearGrade++;
+                    } else if ((double) grade.getScore() / grade.getMaxScore() >= 0.6 && (double) grade.getScore() / grade.getMaxScore() < 0.8) {
+                        countGoodAnswearGrade++;
+                    } else if ((double) grade.getScore() / grade.getMaxScore() < 0.6 && (double) grade.getScore() / grade.getMaxScore() >= 0.4) {
+                        countSufficientAnswearGrade++;
+                    } else {
+                        countBadAnswearGrade++;
+                    }
+                }
+                if (!grades.isEmpty()) {
+                    countSatisfiedTestPickers += (int) grades.stream().filter(grade -> grade.getIsSatisfied() != null && grade.getIsSatisfied() == 1).count();
+                    countUnsatisfiedTestPickers += Math.max(grades.size() - countSatisfiedTestPickers, 0);
+                }
+            }
+            if (studentGroup.getStudents().size() != 0) {
+                countAttendance = countAttendance * 100 / studentGroup.getStudents().size();
+                countExcelentAnswearGrade = countExcelentAnswearGrade * 100 / studentGroup.getStudents().size();
+                countGoodAnswearGrade = countGoodAnswearGrade * 100 / studentGroup.getStudents().size();
+                countSufficientAnswearGrade = countSufficientAnswearGrade * 100 / studentGroup.getStudents().size();
+                countBadAnswearGrade = countBadAnswearGrade * 100 / studentGroup.getStudents().size();
+                countSatisfiedTestPickers = countSatisfiedTestPickers * 100 / studentGroup.getStudents().size();
+                countUnsatisfiedTestPickers = countUnsatisfiedTestPickers * 100 / studentGroup.getStudents().size();
+            }
+            StudentGroupsAnalysisDTO studentGroupAnalysisDTO = new StudentGroupsAnalysisDTO();
+            studentGroupAnalysisDTO.setName(studentGroup.getName());
+            studentGroupAnalysisDTO.setCountStudents(studentGroup.getStudents().size());
+            studentGroupAnalysisDTO.setPercentAttendance(countAttendance);
+            studentGroupAnalysisDTO.setPercentExcellentAnswears(countExcelentAnswearGrade);
+            studentGroupAnalysisDTO.setPercentGoodAnswears(countGoodAnswearGrade);
+            studentGroupAnalysisDTO.setPercentSufficienAnswears(countSufficientAnswearGrade);
+            studentGroupAnalysisDTO.setPercentBadAnswears(countBadAnswearGrade);
+            studentGroupAnalysisDTO.setPercentSatisfiedTestPickers(countSatisfiedTestPickers);
+            studentGroupAnalysisDTO.setPercentUnsatisfiedTestPickers(countUnsatisfiedTestPickers);
+            result.add(studentGroupAnalysisDTO);
+        }
+
+        return result;
+    }
+
+    private List<StudentGroupsAnalysisDTO> analyzeStudentGroupsByLesson(List<StudentGroup> studentGroups, Lecturer lecturer, String lesson) {
+        List<StudentGroupsAnalysisDTO> result = new ArrayList<>();
+        for(StudentGroup studentGroup : studentGroups)  {
+            int countAttendance = 0;
+            int countExcelentAnswearGrade = 0;
+            int countGoodAnswearGrade = 0;
+            int countSufficientAnswearGrade = 0;
+            int countBadAnswearGrade = 0;
+            int countSatisfiedTestPickers = 0;
+            int countUnsatisfiedTestPickers = 0;
+
+            for (Student student :studentGroup.getStudents()) {
+                Set<Attendance> attendances = student.getAttendances().stream().filter(
+                                attendance -> attendance.getLesson().getType().equals(lesson) &&
+                                        attendance.getLesson().getLecturer().getId().equals(lecturer.getId())
+                        && attendance.getLesson().getStudentGroup().getId().equals(studentGroup.getId()) && attendance.getIsPresent().equals(true))
+                        .collect(Collectors.toSet());
+                countAttendance += attendances.size();
+                Set<Grade> grades = student.getGrades().stream().filter(
+                                grade -> grade.getLesson().getType().equals(lesson))
+                        .collect(Collectors.toSet());
+                for (Grade grade : grades) {
+                    if ((double) grade.getScore() / grade.getMaxScore() >= 0.8) {
+                        countExcelentAnswearGrade++;
+                    } else if ((double) grade.getScore() / grade.getMaxScore() >= 0.6 && (double) grade.getScore() / grade.getMaxScore() < 0.8) {
+                        countGoodAnswearGrade++;
+                    }else if ((double) grade.getScore() / grade.getMaxScore() < 0.6 && (double) grade.getScore() / grade.getMaxScore() >= 0.4) {
+                        countSufficientAnswearGrade++;
+                    } else {
+                        countBadAnswearGrade++;
+                    }
+                }
+                if (!grades.isEmpty()){
+                    countSatisfiedTestPickers = (int) grades.stream().filter(grade -> grade.getLesson().getType().equals(lesson) && grade.getIsSatisfied() != null && grade.getIsSatisfied() == 1).count();
+                    countUnsatisfiedTestPickers = Math.max(grades.size() - countSatisfiedTestPickers, 0);
+                }
+            }
+            countAttendance = countAttendance*100/studentGroup.getStudents().size();
+            countExcelentAnswearGrade = countExcelentAnswearGrade*100/studentGroup.getStudents().size();
+            countGoodAnswearGrade = countGoodAnswearGrade*100/studentGroup.getStudents().size();
+            countSufficientAnswearGrade = countSufficientAnswearGrade*100/studentGroup.getStudents().size();
+            countBadAnswearGrade = countBadAnswearGrade*100/studentGroup.getStudents().size();
+            countSatisfiedTestPickers = countSatisfiedTestPickers*100/studentGroup.getStudents().size();
+            countUnsatisfiedTestPickers = countUnsatisfiedTestPickers*100/studentGroup.getStudents().size();
+            StudentGroupsAnalysisDTO studentGroupAnalysisDTO = new StudentGroupsAnalysisDTO();
+            studentGroupAnalysisDTO.setName(studentGroup.getName());
+            studentGroupAnalysisDTO.setCountStudents(studentGroup.getStudents().size());
+            studentGroupAnalysisDTO.setPercentAttendance(countAttendance);
+            studentGroupAnalysisDTO.setPercentExcellentAnswears(countExcelentAnswearGrade);
+            studentGroupAnalysisDTO.setPercentGoodAnswears(countGoodAnswearGrade);
+            studentGroupAnalysisDTO.setPercentSufficienAnswears(countSufficientAnswearGrade);
+            studentGroupAnalysisDTO.setPercentBadAnswears(countBadAnswearGrade);
+            studentGroupAnalysisDTO.setPercentSatisfiedTestPickers(countSatisfiedTestPickers);
+            studentGroupAnalysisDTO.setPercentUnsatisfiedTestPickers(countUnsatisfiedTestPickers);
+            result.add(studentGroupAnalysisDTO);
+        }
+        return result;
+    }
+
+    private List<StudentGroupsAnalysisDTO> analyzeStudentGroupsBySubject(List<StudentGroup> studentGroups, Lecturer lecturer, Subject subject) {
+        List<ExamPoints> list = examPointsService.findBySubjectAndLecturer(subject, lecturer);
+        Map<StudentGroup, List<ExamPoints>> mapEntity = new HashMap<>();
+        for (ExamPoints examPoints : list) {
+            if (mapEntity.containsKey(examPoints.getStudent().getStudentGroup())) {
+                mapEntity.get(examPoints.getStudent().getStudentGroup()).add(examPoints);
+            } else {
+                List<ExamPoints> examPointsList = new ArrayList<>();
+                examPointsList.add(examPoints);
+                mapEntity.put(examPoints.getStudent().getStudentGroup(), examPointsList);
+            }
+        }
+        List<StudentGroupsAnalysisDTO> result = new ArrayList<>();
+        for (Map.Entry<StudentGroup, List<ExamPoints>> entry : mapEntity.entrySet()) {
+            int countLessons = lessonService.findBySubjectAndLecturer(subject, lecturer).size();
+            int countExams = entry.getValue().size();
+            int countAttendance = 0;
+            int countExcelentAnswearGrade = 0;
+            int countGoodAnswearGrade = 0;
+            int countSufficientAnswearGrade = 0;
+            int countBadAnswearGrade = 0;
+            int countSatisfiedTestPickers = 0;
+            int countUnsatisfiedTestPickers = 0;
+            int countExcelentExamPoints = 0;
+            int countGoodExamPoints = 0;
+            int countSufficientExamPoints = 0;
+            int countBadExamPoints = 0;
+            for (Student student : entry.getKey().getStudents()) {
+                Set<Attendance> attendances = student.getAttendances().stream().filter(
+                        attendance -> attendance.getLesson().getSubject().getId().equals(subject.getId()))
+                        .collect(Collectors.toSet());
+                countAttendance += attendances.size();
+                Set<Grade> grades = student.getGrades().stream().filter(
+                        grade -> grade.getLesson().getSubject().getId().equals(subject.getId()))
+                        .collect(Collectors.toSet());
+                for (Grade grade : grades) {
+                    if ((double) grade.getScore() / grade.getMaxScore() >= 0.8) {
+                        countExcelentAnswearGrade++;
+                    } else if ((double) grade.getScore() / grade.getMaxScore() >= 0.6 && (double) grade.getScore() / grade.getMaxScore() < 0.8) {
+                        countGoodAnswearGrade++;
+                    }else if ((double) grade.getScore() / grade.getMaxScore() < 0.6 && (double) grade.getScore() / grade.getMaxScore() >= 0.4) {
+                        countSufficientAnswearGrade++;
+                    } else {
+                        countBadAnswearGrade++;
+                    }
+                }
+                if (!grades.isEmpty()){
+                    countSatisfiedTestPickers += (int) grades.stream().filter(grade -> grade.getIsSatisfied() != null && grade.getIsSatisfied() == 1).count();
+                    countUnsatisfiedTestPickers += Math.max(grades.size() - countSatisfiedTestPickers, 0);
+                }
+                for (ExamPoints examPoints : list) {
+                    if (examPoints.getStudent().getId().equals(student.getId())) {
+                        if (examPoints.getPoint()/examPoints.getMaxPoint() >= 80) {
+                            countExcelentExamPoints++;
+                        } else if (examPoints.getPoint()/examPoints.getMaxPoint() >= 60 && examPoints.getPoint()/examPoints.getMaxPoint() < 80) {
+                            countGoodExamPoints++;
+                        } else if (examPoints.getPoint()/examPoints.getMaxPoint() < 60 && examPoints.getPoint()/examPoints.getMaxPoint() >= 40) {
+                            countSufficientExamPoints++;
+                        } else {
+                            countBadExamPoints++;
+                        }
+                    }
+                }
+            }
+            if (countExams != 0) {
+                countExcelentExamPoints = countExcelentExamPoints * 100 / countExams;
+                countGoodExamPoints = countGoodExamPoints * 100 / countExams;
+                countSufficientExamPoints = countSufficientExamPoints * 100 / countExams;
+                countBadExamPoints = countBadExamPoints * 100 / countExams;
+            }
+            if(countLessons != 0) {
+                countAttendance = countAttendance * 100 / countLessons / entry.getKey().getStudents().size();
+                countGoodAnswearGrade = countGoodAnswearGrade * 100 / entry.getKey().getStudents().size()/ countLessons;
+                countSufficientAnswearGrade = countSufficientAnswearGrade * 100 / countLessons / entry.getKey().getStudents().size();
+                countBadAnswearGrade = countBadAnswearGrade * 100 / countLessons/  entry.getKey().getStudents().size();
+                countExcelentAnswearGrade = countExcelentAnswearGrade * 100 / countLessons/  entry.getKey().getStudents().size();
+            }
+            countAttendance /= entry.getKey().getStudents().size();
+            StudentGroupsAnalysisDTO studentGroupAnalysisDTO = new StudentGroupsAnalysisDTO();
+            studentGroupAnalysisDTO.setName(entry.getKey().getName());
+            studentGroupAnalysisDTO.setCountLessons(countLessons);
+            studentGroupAnalysisDTO.setCountStudents(entry.getKey().getStudents().size());
+            studentGroupAnalysisDTO.setPercentAttendance(countAttendance);
+            studentGroupAnalysisDTO.setPercentExcellentAnswears(countExcelentAnswearGrade);
+            studentGroupAnalysisDTO.setPercentGoodAnswears(countGoodAnswearGrade);
+            studentGroupAnalysisDTO.setPercentSufficienAnswears(countSufficientAnswearGrade);
+            studentGroupAnalysisDTO.setPercentBadAnswears(countBadAnswearGrade);
+            studentGroupAnalysisDTO.setPercentExcellentExamPoints(countExcelentExamPoints);
+            studentGroupAnalysisDTO.setPercentGoodExamPoints(countGoodExamPoints);
+            studentGroupAnalysisDTO.setPercentSufficientExamPoints(countSufficientExamPoints);
+            studentGroupAnalysisDTO.setPercentBadExamPoints(countBadExamPoints);
+            studentGroupAnalysisDTO.setPercentSatisfiedTestPickers(countSatisfiedTestPickers);
+            studentGroupAnalysisDTO.setPercentUnsatisfiedTestPickers(countUnsatisfiedTestPickers);
+            result.add(studentGroupAnalysisDTO);
+        }
+        return result;
+    }
+
+
 }

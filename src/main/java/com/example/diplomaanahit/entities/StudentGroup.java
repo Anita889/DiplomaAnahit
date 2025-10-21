@@ -84,4 +84,11 @@ public class StudentGroup {
     public void setLessons(Set<Lesson> lessons) {
         this.lessons = lessons;
     }
+
+    public Set<Subject> getSubjects() {
+        return subjects;
+    }
+    public void setSubjects(Set<Subject> subjects) {
+        this.subjects = subjects;
+    }
 }

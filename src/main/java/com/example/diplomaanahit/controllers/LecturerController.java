@@ -1,6 +1,7 @@
 package com.example.diplomaanahit.controllers;
 
 
+import com.example.diplomaanahit.calculations.StudentTestCalculationService;
 import com.example.diplomaanahit.dtos.*;
 import com.example.diplomaanahit.entities.*;
 import com.example.diplomaanahit.mapper.Mapper;
@@ -48,6 +49,12 @@ public class LecturerController {
 
     @Autowired
     private StudentDataService studentDataService;
+
+    @Autowired
+    private StudentTestCalculationService studentCalculationService;
+
+    @Autowired
+    private AttendanceDataService attendanceService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getLecturer(@PathVariable Long userId, @PathVariable Long lecturerId) throws Exception {
@@ -132,7 +139,7 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "subjects/{subjectId}/studentGroups", method = RequestMethod.PUT)
-    public ResponseEntity<?> updateExamPointsForStudents(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long subjectId, @RequestBody List<StudentGroupDTO> studentGroups) throws Exception {
+    public ResponseEntity<?> updateExamPointsForStudents(@PathVariable Long userId, @PathVariable Long lecturerId, @PathVariable Long subjectId, @RequestBody ExamRequest examRequest) throws Exception {
         UserEntity userEntity = userService.findById(userId);
         Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
@@ -143,7 +150,7 @@ public class LecturerController {
             throw new Exception("Subject with this id is not exist");
         }
         List<ExamPoints> examPointsList = new ArrayList<>();
-        for (StudentGroupDTO studentGroup : studentGroups) {
+        for (StudentGroupDTO studentGroup : examRequest.getStudentGroups()) {
             for (StudentDTO student : studentGroup.getStudents()) {
                 if(student.getPoint() != null){
                     ExamPoints examPoints = new ExamPoints();
@@ -151,6 +158,7 @@ public class LecturerController {
                     examPoints.setSubject(subject);
                     examPoints.setPoint(student.getPoint());
                     examPoints.setLecturer(lecturer);
+                    examPoints.setMaxPoint(examRequest.getMaxScore());
                     examPointsList.add(examPoints);
                 }
             }
@@ -171,61 +179,8 @@ public class LecturerController {
             throw new Exception("Subject with this id is not exist");
         }
         List<ExamPoints> list = examPointsService.findBySubjectAndLecturer(subject, lecturer);
-        Map<StudentGroup, List<ExamPoints>> mapEntity = new HashMap<>();
-        for (ExamPoints examPoints : list) {
-            if (mapEntity.containsKey(examPoints.getStudent().getStudentGroup())) {
-                mapEntity.get(examPoints.getStudent().getStudentGroup()).add(examPoints);
-            } else {
-                List<ExamPoints> examPointsList = new ArrayList<>();
-                examPointsList.add(examPoints);
-                mapEntity.put(examPoints.getStudent().getStudentGroup(), examPointsList);
-            }
-        }
-        List<StudentGroupAnalysisDTO> result = new ArrayList<>();
-        for (Map.Entry<StudentGroup, List<ExamPoints>> entry : mapEntity.entrySet()) {
-            int countLessons = lessonService.findBySubjectAndLecturer(subject, lecturer).size();
-            int countAttendance = 0;
-            int countExcelentAnswearGrade = 0;
-            int countGoodAnswearGrade = 0;
-            int countBadAnswearGrade = 0;
-            int countSatisfiedTestPickers = 0;
-            int countUnsatisfiedTestPickers = 0;
-            int countExcelentExamPoints = 0;
-            int countGoodExamPoints = 0;
-            int countBadExamPoints = 0;
-            for (Student student : entry.getKey().getStudents()) {
-                Set<Attendance> attendances = student.getAttendances().stream().filter(attendance -> attendance.getLesson().getSubject().getId().equals(subjectId)).collect(Collectors.toSet());
-                countAttendance += attendances.size();
-                Set<Grade> grades = student.getGrades().stream().filter(grade -> grade.getLesson().getSubject().getId().equals(subjectId)).collect(Collectors.toSet());
-                for (Grade grade : grades) {
-                    if (grade.getScore() / grade.getMaxScore() >= 0.8) {
-                        countExcelentAnswearGrade++;
-                    } else if (grade.getScore() / grade.getMaxScore() >= 0.4 && grade.getScore() / grade.getMaxScore() < 0.8) {
-                        countGoodAnswearGrade++;
-                    } else {
-                        countBadAnswearGrade++;
-                    }
-                }
-                if (!grades.isEmpty()){
-                    countSatisfiedTestPickers += grades.stream().filter(grade -> grade.getIsSatisfied() != null && grade.getIsSatisfied() == 1).count();
-                    countUnsatisfiedTestPickers += grades.size() - countSatisfiedTestPickers < 0 ? 0 : grades.size() - countSatisfiedTestPickers;
-                }
-                for (ExamPoints examPoints : list) {
-                    if (examPoints.getStudent().getId().equals(student.getId())) {
-                        if (examPoints.getPoint() >= 80) {
-                            countExcelentExamPoints++;
-                        } else if (examPoints.getPoint() >= 40 && examPoints.getPoint() < 80) {
-                            countGoodExamPoints++;
-                        } else {
-                            countBadExamPoints++;
-                        }
-                    }
-                }
-            }
-
-            StudentGroupAnalysisDTO studentGroupAnalysisDTO = new StudentGroupAnalysisDTO(entry.getKey().getName(), countLessons, countAttendance, countExcelentAnswearGrade, countGoodAnswearGrade, countBadAnswearGrade, countSatisfiedTestPickers, countUnsatisfiedTestPickers, countExcelentExamPoints, countGoodExamPoints, countBadExamPoints);
-            result.add(studentGroupAnalysisDTO);
-        }
+        List<StudentGroup> studentGroups = list.stream().map(ExamPoints::getStudent).map(Student::getStudentGroup).distinct().collect(Collectors.toList());
+        List<StudentGroupsAnalysisDTO> result = studentCalculationService.analyzeStudentGroups(studentGroups, lecturer, subject, null);
         return ResponseEntity.ok(result);
     }
 
@@ -262,7 +217,7 @@ public class LecturerController {
     }
 
     @RequestMapping(value = "subjects/{subjectId}/lesson/{lessonId}/affection", method = RequestMethod.GET)
-    public ResponseEntity<?> getAffection(@PathVariable Long userId, @PathVariable Long lecturerId,@PathVariable Long subjectId, @PathVariable Long lessonId) throws Exception {
+    public ResponseEntity<?> getAffectionByLesson(@PathVariable Long userId, @PathVariable Long lecturerId,@PathVariable Long subjectId, @PathVariable Long lessonId) throws Exception {
         UserEntity userEntity = userService.findById(userId);
         Lecturer lecturer = lecturerService.findById(lecturerId);
         if(lecturer == null){
@@ -275,44 +230,7 @@ public class LecturerController {
 
         List<Long> studentGroupIds = lessonService.findByLessonName(lesson.getType());
         List<StudentGroup> studentGroups = studentGroupDataService.findByIds(studentGroupIds);
-
-        List<StudentGroupAnalysisDTO> result = new ArrayList<>();
-        for (StudentGroup s : studentGroups){
-            int countAttendance = 0;
-            int countExcelentAnswearGrade = 0;
-            int countGoodAnswearGrade = 0;
-            int countBadAnswearGrade = 0;
-            int countSatisfiedTestPickers = 0;
-            int countUnsatisfiedTestPickers = 0;
-            for (Student student : s.getStudents()) {
-                Set<Attendance> attendances = student.getAttendances().stream().filter(attendance -> attendance.getLesson().getSubject().getId().equals(subjectId)).collect(Collectors.toSet());
-                countAttendance += attendances.size();
-                Set<Grade> grades = student.getGrades().stream().filter(grade -> grade.getLesson().getSubject().getId().equals(subjectId)).collect(Collectors.toSet());
-                for (Grade grade : grades) {
-                    if (grade.getScore() / grade.getMaxScore() >= 0.8) {
-                        countExcelentAnswearGrade++;
-                    } else if (grade.getScore() / grade.getMaxScore() >= 0.4 && grade.getScore() / grade.getMaxScore() < 0.8) {
-                        countGoodAnswearGrade++;
-                    } else {
-                        countBadAnswearGrade++;
-                    }
-                }
-                if (!grades.isEmpty()){
-                    countSatisfiedTestPickers += grades.stream().filter(grade -> grade.getIsSatisfied() != null && grade.getIsSatisfied() == 1).count();
-                    countUnsatisfiedTestPickers += grades.size() - countSatisfiedTestPickers < 0 ? 0 : grades.size() - countSatisfiedTestPickers;
-                }
-
-            }
-            int g = s.getStudents().size() +10;
-             countAttendance = 1300/g;
-             countExcelentAnswearGrade = 500/g;
-             countGoodAnswearGrade = 800/g;
-             countBadAnswearGrade = 300/g;
-             countSatisfiedTestPickers = 100/g;
-             countUnsatisfiedTestPickers = 500/g;
-            StudentGroupAnalysisDTO studentGroupAnalysisDTO = new StudentGroupAnalysisDTO(s.getName() , s.getStudents().size() +10, countAttendance, countExcelentAnswearGrade, countGoodAnswearGrade, countBadAnswearGrade, countSatisfiedTestPickers, countUnsatisfiedTestPickers, 0, 0, 0);
-            result.add(studentGroupAnalysisDTO);
-        }
+        List<StudentGroupsAnalysisDTO> result =studentCalculationService.analyzeStudentGroups(studentGroups, lecturer, null, lesson);
         return ResponseEntity.ok(result);
     }
 
@@ -353,6 +271,9 @@ public class LecturerController {
         if(lesson == null){
             throw new Exception("Lesson with this id is not exist");
         }
+        List<Long> stIds= lessonService.findByLessonName(lesson.getType());
+        Map<Long, Lesson> studentGroups = lessonService.findAllByStudentGroups(studentGroupDataService.findByIds(stIds)).stream()
+                .collect(Collectors.toMap(Lesson::getId, lesson1 -> lesson1));
         for (StudentGroupDTO studentGroupDTO : studentGroupDTOS) {
             for (StudentDTO studentDTO : studentGroupDTO.getStudents()) {
                 Student student = studentDataService.findById(studentDTO.getId());
@@ -361,8 +282,9 @@ public class LecturerController {
                 }
                 Attendance attendance = new Attendance();
                 attendance.setIsPresent(studentDTO.isPresent());
-                attendance.setLesson(lesson);
+                attendance.setLesson(studentGroups.get(studentGroupDTO.getId()));
                 attendance.setStudent(student);
+                attendanceService.save(attendance);
             }
         }
 

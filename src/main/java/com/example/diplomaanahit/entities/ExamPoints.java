@@ -16,6 +16,9 @@ public class ExamPoints {
     @Column(nullable = false)
     private int point;
 
+    @Column(name = "max_point")
+    private Integer max_point;
+
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
     private Student student;
@@ -67,5 +70,13 @@ public class ExamPoints {
 
     public Lecturer getLecturer() {
         return lecturer;
+    }
+
+    public Integer getMaxPoint() {
+        return max_point;
+    }
+
+    public void setMaxPoint(Integer examType) {
+        this.max_point = max_point;
     }
 }

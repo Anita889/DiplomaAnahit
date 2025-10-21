@@ -28,7 +28,7 @@ public class LessonDataService {
 
 
     public List<Lesson> findAllByStudentGroupAndSubject(Long studentGroupId, Subject subject) {
-       return repository.findAllByAcademyGroup(studentGroupId, subject.getId());
+       return repository.findAllByAcademyGroup(studentGroupId);
     }
 
     public List<LessonDTO> toDTOList(List<Lesson> list) {
@@ -77,7 +77,7 @@ public class LessonDataService {
     public List<Lesson> findAllByStudentGroups(List<StudentGroup> studentGroups) {
         List<Lesson> lessons = new ArrayList<>();
         for (StudentGroup studentGroup : studentGroups) {
-            List<Lesson> groupLessons = repository.findAllByAcademyGroup(studentGroup.getId(), null);
+            List<Lesson> groupLessons = repository.findAllByAcademyGroup(studentGroup.getId());
             lessons.addAll(groupLessons);
         }
         return lessons;
